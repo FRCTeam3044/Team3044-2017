@@ -49,7 +49,44 @@ public class Drive {
 	}
 
 	public void driveTeleopPeriodic() {
-		//Write Code Here
+
+		if(controller.getLeftY() > 0){
+			//Forward
+			leftFrontDrive.set(1);
+			leftBackDrive.set(1);
+			rightFrontDrive.set(1);
+			rightBackDrive.set(1);
+		}else if(controller.getLeftY() < 0){
+			//Reverse
+			leftFrontDrive.set(-1);
+			leftBackDrive.set(-1);
+			rightFrontDrive.set(-1);
+			rightBackDrive.set(-1);
+		}else if(controller.getLeftX() < 0){
+			//Left Shift
+			leftFrontDrive.set(-1);
+			leftBackDrive.set(1);
+			rightFrontDrive.set(1);
+			rightBackDrive.set(-1);
+		}else if(controller.getLeftX() > 0){
+			//Right Shift
+			leftFrontDrive.set(1);
+			leftBackDrive.set(-1);
+			rightFrontDrive.set(-1);
+			rightBackDrive.set(1);
+		}else if(controller.getRightX() > 0){
+			//Clockwise
+			leftFrontDrive.set(1);
+			leftBackDrive.set(1);
+			rightFrontDrive.set(-1);
+			rightBackDrive.set(-1);
+		}else if(controller.getRightX() < 0){
+		//Counter Clockwise
+			leftFrontDrive.set(-1);
+			leftBackDrive.set(-1);
+			rightFrontDrive.set(1);
+			rightBackDrive.set(1);
+		}
 	}
 
 	public void testPeriodic() {
