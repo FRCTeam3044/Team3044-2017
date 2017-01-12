@@ -36,10 +36,10 @@ public class Components {
 
 
 	public void init() {
-		leftFrontDrive = new CANTalon(1);
+		leftFrontDrive = new CANTalon(6);
 		leftBackDrive = new CANTalon(2);
-		rightFrontDrive = new CANTalon(3);
-		rightBackDrive = new CANTalon(4);
+		rightFrontDrive = new CANTalon(7);
+		rightBackDrive = new CANTalon(9);
 
 		leftFrontDrive.setFeedbackDevice(FeedbackDevice.AnalogEncoder);
 		rightFrontDrive.setFeedbackDevice(FeedbackDevice.AnalogEncoder);

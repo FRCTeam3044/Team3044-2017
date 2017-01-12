@@ -19,7 +19,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousInit() {
-		// Drive
+		//Drive
 		CommonArea.leftAutoSpeed = 0;
 		CommonArea.rightAutoSpeed = 0;
 		CommonArea.leftDesiredEncoderValue = 0;
@@ -38,12 +38,14 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
+
 		CommonArea.CommonPeriodic();
 		drive.driveTeleopPeriodic();
 		
 		SmartDashboard.putNumber("DB/String 5", Components.getInstance().leftFrontDrive.getAnalogInPosition());
 		SmartDashboard.putNumber("DB/String 6", Components.getInstance().rightFrontDrive.getAnalogInPosition());
 		SmartDashboard.putNumber("DRIVECURRENT", Components.getInstance().leftFrontDrive.getOutputCurrent());
+	
 	}
 
 	public void disabledInit() {
@@ -51,7 +53,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledPeriodic() {
-		//Null
+		//Null <- Whoever wrote this is stooped
 	}
 
 	public void testInit() {
