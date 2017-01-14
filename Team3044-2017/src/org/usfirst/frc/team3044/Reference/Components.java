@@ -36,7 +36,7 @@ public class Components {
 
 
 	public void init() {
-		leftFrontDrive = new CANTalon(6);
+		leftFrontDrive = new CANTalon(8);
 		leftBackDrive = new CANTalon(2);
 		rightFrontDrive = new CANTalon(7);
 		rightBackDrive = new CANTalon(9);
