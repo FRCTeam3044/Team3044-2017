@@ -1,6 +1,9 @@
 package org.usfirst.frc.team3044.RobotCode;
 
 import org.usfirst.frc.team3044.RobotCode.*;
+
+import java.io.IOException;
+
 import org.usfirst.frc.team3044.Reference.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -10,7 +13,10 @@ public class Robot extends IterativeRobot {
 	Drive drive = new Drive();
 	FirstController controller;
 	private double Dashboard;
-
+	
+	RobotHttpServer httpService = new RobotHttpServer(); 
+	
+	
 	public void robotInit() {
 		Components.getInstance().init();
 		controller.getInstance();
@@ -42,7 +48,17 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testInit() {
-		drive.testInit();
+		
+		try { 
+		httpService.start(0, true);
+		}
+		catch (IOException e)
+		{
+			System.out.println("IOException thrown in Robot.testInit()");
+			System.out.println(e.getMessage());
+			System.out.println(e.getStackTrace());
+		}
+		//drive.testInit();
 	}
 
 	public void testPeriodic() {
