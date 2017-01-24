@@ -1,17 +1,10 @@
 package org.usfirst.frc.team3044.RobotCode;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import org.usfirst.frc.team3044.Reference.*;
 import com.ctre.CANTalon;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive {
-	PowerDistributionPanel pdp = new PowerDistributionPanel();
-
 	FirstController controller = FirstController.getInstance();
 
 	double leftAutoSpeed;
@@ -23,11 +16,7 @@ public class Drive {
 	public CANTalon leftBackDrive;
 	public CANTalon rightFrontDrive;
 	public CANTalon rightBackDrive;
-	
-	File f;
-	BufferedWriter bw;
-	FileWriter fw;
-	int i;
+
 	private Components comp = Components.getInstance();
 
 	public double deadband(double value){
@@ -40,7 +29,6 @@ public class Drive {
 	
 	public void driveInit() {
 		controller.getInstance();
-		i = 0;
 		leftFrontDrive = comp.leftFrontDrive;
 		leftBackDrive = comp.leftBackDrive;
 		rightFrontDrive = comp.rightFrontDrive;
@@ -56,15 +44,6 @@ public class Drive {
 		leftBackDrive.enableBrakeMode(true);
 		rightBackDrive.enableBrakeMode(true);
 		
-		try {
-    		f = new File("/home/lvuser/Motor Information.txt");
-    		if(!f.exists()){
-    			f.createNewFile();
-    		}
-			fw = new FileWriter(f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}	
 	}
 
 	public void driveAutoPeriodic() {
@@ -98,26 +77,11 @@ public class Drive {
 		SmartDashboard.putString("DB/String 6", String.valueOf("Right Front " + Components.getInstance().rightFrontDrive.getOutputCurrent()));
 		SmartDashboard.putString("DB/String 7", String.valueOf("Left Back " + Components.getInstance().leftBackDrive.getOutputCurrent()));
 		SmartDashboard.putString("DB/String 8", String.valueOf("Right Back " + Components.getInstance().rightBackDrive.getOutputCurrent()));
-		i++;
-		try {
-			bw.write(String.valueOf(i));
-			bw.write(";");
-			bw.write((String.valueOf(pdp.getCurrent(14))) + ";" + (String.valueOf(pdp.getCurrent(3))) + ";" + (String.valueOf(pdp.getCurrent(13))) + ";" + (String.valueOf(pdp.getCurrent(12)) + "\n"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	public void testPeriodic() {
 	}
 	
 	public void testInit(){
-		try {
-			bw.close();
-			fw.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	}

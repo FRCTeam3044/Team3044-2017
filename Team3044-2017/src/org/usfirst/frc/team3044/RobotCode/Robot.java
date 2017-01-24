@@ -33,7 +33,7 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		Components.getInstance().init();
 		
-		//drive.driveInit();
+		drive.driveInit();
 	}
 
 	public void teleopPeriodic() {
@@ -48,13 +48,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testInit() {
-		try {
-			httpService.start(0, true);
-		} catch (IOException e) {
-			System.out.println("Exception thrown while starting HTTP server");
-			System.out.println(e.getMessage());
-			System.out.println(e.getStackTrace());
-		}
+
 	}
 
 	public void testPeriodic() {
