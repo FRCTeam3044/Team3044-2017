@@ -8,14 +8,14 @@ import org.usfirst.frc.team3044.Reference.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team3044.Diagnostics.*;
 
 public class Robot extends IterativeRobot {
 	Drive drive = new Drive();
 	FirstController controller;
 	private double Dashboard;
 	
-	RobotHttpServer httpService = new RobotHttpServer(); 
-	
+	DiagnosticsServer diagnosticsServer = new DiagnosticsServer(); 
 	
 	public void robotInit() {
 		Components.getInstance().init();
@@ -32,7 +32,6 @@ public class Robot extends IterativeRobot {
 
 	public void teleopInit() {
 		Components.getInstance().init();
-		
 		drive.driveInit();
 	}
 
@@ -48,7 +47,13 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testInit() {
-
+		try { 
+		diagnosticsServer.start(0, true);
+		}
+		catch (IOException e)
+		{
+			
+		}
 	}
 
 	public void testPeriodic() {
