@@ -1,5 +1,8 @@
 package org.usfirst.frc.team3044.Reference;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class Utilities {
 
 	public static boolean tolerance(double lowerValue, double actualValue, double upperValue){
@@ -12,5 +15,13 @@ public class Utilities {
 		} else {
 			return Value;
 		}
+	}
+	
+	public static String getStackTraceString(Exception e)
+	{
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		return sw.toString();
 	}
 }
