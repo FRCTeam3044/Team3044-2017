@@ -1,6 +1,7 @@
-package org.usfirst.frc.team3044.Reference;
+package org.usfirst.frc.team3044.Diagnostics;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,17 +14,22 @@ import org.nanohttpd.protocols.http.response.Status;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-// import org.nanohttpd.protocols.http.response.Response;
+import org.usfirst.frc.team3044.Diagnostics.*;
 
-public class RobotHttpServer extends org.nanohttpd.protocols.http.NanoHTTPD {
+public class DiagnosticsServer extends org.nanohttpd.protocols.http.NanoHTTPD {
 
-	RobotHttpServer( int port) {
-		super(5800);
+	public static int TCP_PORT = 5800; 
+	public static Map<String, Object> Cache; 
+	
+	DiagnosticsServer( int port) {
+		super(port);
+		Cache= Collections.EMPTY_MAP;  
 	}
 	
-	public RobotHttpServer()
+	public DiagnosticsServer()
 	{
-		super(5800);
+		super(TCP_PORT);
+		Cache= Collections.EMPTY_MAP; 
 	}
 	
 	@Override public Response serve(org.nanohttpd.protocols.http.IHTTPSession session)
@@ -32,10 +38,15 @@ public class RobotHttpServer extends org.nanohttpd.protocols.http.NanoHTTPD {
 		
 		Method method = session.getMethod(); 
 		
+		Object obj = null; 
+		
 		if (Method.PUT.equals(method) || Method.POST.equals(method)) {
 	        try {
 	            session.parseBody(map);
-	        } 
+	            String json = map.get("postData");
+	            JSONParser parser = new JSONParser();
+	        	obj = parser.parse(json); 
+	  	        } 
 	        catch (Exception e)
 	        {
 	        	System.out.println ("Exception thrown while parsing request");
@@ -43,48 +54,38 @@ public class RobotHttpServer extends org.nanohttpd.protocols.http.NanoHTTPD {
 	        	System.out.println(e.getStackTrace());
 	        }
 		}
-		String json = map.get("postData");
-
-		JSONParser parser = new JSONParser();
 		
 		try {
-			Object obj = parser.parse(json); 
-			
-			JSONObject jsonObject = (JSONObject) obj;
 			
 			String requestUri = session.getUri(); 
 			
 			IStatus status = Status.NOT_IMPLEMENTED; 
 			
-			RobotHttpServerDispatchResponse result = Dispatch (requestUri, jsonObject, status);
+			DiagnosticsServerDispatchResponse result = Dispatch (requestUri, obj, status,method);
 			
-			if (result.Status==Status.OK) { 
-			return Response.newFixedLengthResponse(result.Status, "application/json", ((JSONObject)result.ResponseData).toJSONString());
+			if (result.ResponseData.getClass().equals(JSONObject.class) )
+			{
+				return Response.newFixedLengthResponse(result.Status, "application/json", ((JSONObject)result.ResponseData).toJSONString()); 
 			}
-			else
+			
+			if (result.ResponseData.getClass().equals(String.class))
 			{
 				return Response.newFixedLengthResponse(result.Status, "application/text", (String)result.StatusMessage);
 			}
 			
-			
+			return Response.newFixedLengthResponse(Status.OK, "application/unknown", result.toString());
 		}
 		catch (Exception e)
 		{
 			return Response.newFixedLengthResponse(Status.INTERNAL_ERROR, "application/json",e.getMessage()); 
 		}
-
-		
-		
 	}
 	
 	
 	// This will dynamically invoke the target method 
-	RobotHttpServerDispatchResponse Dispatch(String target, JSONObject arguments, IStatus status)
+	DiagnosticsServerDispatchResponse Dispatch(String target, Object arguments, IStatus status, Method httpMethod)
 	{
-		// URI format will be 
-		// /Package.Class.Name/methodName
-		
-		RobotHttpServerDispatchResponse response = new RobotHttpServerDispatchResponse();
+		DiagnosticsServerDispatchResponse response = new DiagnosticsServerDispatchResponse();
 		
 		String[] pathSegments = target.split("/"); 
 		
@@ -100,36 +101,41 @@ public class RobotHttpServer extends org.nanohttpd.protocols.http.NanoHTTPD {
 				Object o = c.newInstance();
 				
 				java.lang.reflect.Method m = 
-						c.getMethod(methodName, new Class[] {JSONObject.class});
+						c.getMethod(methodName, new Class[] {Object.class, org.nanohttpd.protocols.http.request.Method.class});
 			
-				Object r = m.invoke(o, arguments); 
+				Object r = m.invoke(o, arguments, httpMethod); 
 				
-				
-				response.Status= Status.OK; 
-				response.ResponseData = r;
-				return response; 
+				// TODO: Allow invoke to set HTTP Status and status message 
+				return (DiagnosticsServerDispatchResponse) r; 
 				
 			} catch (ClassNotFoundException e) {
 				response.Status =  Status.NOT_FOUND; 
 				response.StatusMessage = "Class " + pathSegments[1] + " not found"; 
+				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
 			} catch (NoSuchMethodException e) {
 				response.Status=Status.NOT_FOUND; 
 				response.StatusMessage= "Method " + pathSegments[2] + " in " + pathSegments[1] + "  not found";
+				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
 			} catch (SecurityException e) {
 				response.Status=Status.FORBIDDEN;
 				response.StatusMessage= "Security exception thrown while processing request";
+				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
 			} catch (InstantiationException e) {
 				response.Status=Status.INTERNAL_ERROR;
 				response.StatusMessage= "Instantiation exception";
+				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
 			} catch (IllegalAccessException e) {
 				response.Status=Status.INTERNAL_ERROR; 
 				response.StatusMessage= "Illegal access exception";
+				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
 			} catch (IllegalArgumentException e) {
 				response.Status=Status.BAD_REQUEST;
 				response.StatusMessage= "Illegal argument exception"; 
+				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
 			} catch (InvocationTargetException e) {
 				response.Status=Status.INTERNAL_ERROR;
-				response.StatusMessage= "Invocation exception";
+				response.StatusMessage= "Invocation exception: " + e.getStackTrace().toString();
+				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
 			}
 			return response; 
 		}

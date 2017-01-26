@@ -18,21 +18,91 @@
  * 
  * */
 
-package org.usfirst.frc.team3044.Reference;
+package org.usfirst.frc.team3044.Diagnostics;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.json.simple.JSONObject;
+import org.nanohttpd.protocols.http.request.Method;
+import org.nanohttpd.protocols.http.response.Response;
+import org.nanohttpd.protocols.http.response.Status;
 
-public class RobotHttpServerUtility
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+public class Server
 {
-	public Object Ping(JSONObject arg)
+	public DiagnosticsServerDispatchResponse Cache(Object o,  org.nanohttpd.protocols.http.request.Method method)
 	{
-		JSONObject r = new JSONObject();
 		
-		r.put("ResponseType","PingReply");
-		r.put("TimeStamp", new Date().toString());
+		// Add/Update
+		if (Method.POST.equals(method))
+		{
+			if (o.getClass().equals(JSONObject.class))
+			{}
+			else
+			{
+				// Bad request 
+			}
+			return null; 
+			
+		}
 		
-		return r; 
+		// Get
+		if (Method.GET.equals(method))
+		{
+			return null; 
+		}
+		
+		// Method not allowed 
+		return null; 
+	}
+	
+	public DiagnosticsServerDispatchResponse Ping(Object o, org.nanohttpd.protocols.http.request.Method method)
+	{
+		JSONObject arg = (JSONObject)o; 
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		arg.put("RequestMethod", method.toString());
+		arg.put("ResponseType","PingReply");
+		arg.put("TimeStamp", sdf.format(new Date()));
+		arg.put("Success", true); 
+		
+		DiagnosticsServerDispatchResponse ret = new DiagnosticsServerDispatchResponse(); 
+		ret.Status = Status.OK;
+		ret.ResponseData = arg; 
+		return ret; 
+	}
+	
+	public DiagnosticsServerDispatchResponse PutSmartDashboardString(Object o, Method method)
+	{
+		JSONObject arg = (JSONObject)o; 
+		
+		DiagnosticsServerDispatchResponse ret = new DiagnosticsServerDispatchResponse(); 
+		try {
+		if (Method.PUT.equals(method) || Method.POST.equals(method))
+		{
+			String sdSlot = (String)arg.get("DashboardSlot");
+			String sdData = (String)arg.get("Data"); 
+			SmartDashboard.putString(sdSlot,sdData); 
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+			arg.put("ResponseType","PutSmartDashboardStringReply");
+			arg.put("TimeStamp", sdf.format(new Date()));
+			arg.put("Success", true); 
+			ret.Status = Status.OK; 
+			ret.ResponseData = arg; 
+			return ret ; 
+		}
+		else
+		{
+			ret.Status = Status.METHOD_NOT_ALLOWED; 
+			ret.ResponseData = "HTTP method not valid for this operation"; 
+			return ret; 
+		}} 
+		catch (Exception e)
+		{
+			return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e);
+			
+		}
 	}
 }
