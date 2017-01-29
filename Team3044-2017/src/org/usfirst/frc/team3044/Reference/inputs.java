@@ -2,7 +2,7 @@ package org.usfirst.frc.team3044.Reference;
 
 import org.usfirst.frc.team3044.Reference.FirstController;
 import org.usfirst.frc.team3044.Reference.SecondaryController;
-
+//ignore this
 public class inputs {
 	
 	static FirstController firstJoy = FirstController.getInstance();
@@ -18,7 +18,7 @@ public class inputs {
 	public static boolean movexFeet = false;
 	public static boolean atDistance = false;
 	public static boolean isManualDrive = true;
-	
+
 	//Shooter
 	public static double shooterVisionTopSpeed;
 	public static double shooterVisionBotSpeed;
