@@ -11,7 +11,7 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//ignore this
+
 public class shooter {
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 

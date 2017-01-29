@@ -2,7 +2,7 @@ package org.usfirst.frc.team3044.Reference;
 
 import org.usfirst.frc.team3044.Reference.FirstController;
 import org.usfirst.frc.team3044.Reference.SecondaryController;
-//ignore this
+
 public class inputs {
 	
 	static FirstController firstJoy = FirstController.getInstance();
