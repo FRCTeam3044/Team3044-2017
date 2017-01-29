@@ -6,7 +6,7 @@ import java.util.Date;
 import org.json.simple.JSONObject;
 import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.Status;
-import org.usfirst.frc.team3044.Reference.Components;
+import org.usfirst.frc.team3044.Reference.Outputs;
 import org.usfirst.frc.team3044.Reference.FirstController;
 import org.usfirst.frc.team3044.Reference.Utilities;
 
@@ -29,10 +29,10 @@ public class Drive extends org.usfirst.frc.team3044.RobotCode.Drive {
 		rd.put("Timestamp", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS").format(new Date())); 
 		try 
 		{
-			rd.put("leftFrontDrive output current", Components.getInstance().leftFrontDrive.getOutputCurrent());
-			rd.put("rightFrontDrive output current", Components.getInstance().rightFrontDrive.getOutputCurrent());
-			rd.put("leftBackDrive output current", Components.getInstance().leftBackDrive.getOutputCurrent());
-			rd.put("rightBackDrive output current", Components.getInstance().rightBackDrive.getOutputCurrent());
+			rd.put("leftFrontDrive output current", Outputs.getInstance().leftFrontDrive.getOutputCurrent());
+			rd.put("rightFrontDrive output current", Outputs.getInstance().rightFrontDrive.getOutputCurrent());
+			rd.put("leftBackDrive output current", Outputs.getInstance().leftBackDrive.getOutputCurrent());
+			rd.put("rightBackDrive output current", Outputs.getInstance().rightBackDrive.getOutputCurrent());
 			
 			for (int i=0;i<16;i++)
 			{

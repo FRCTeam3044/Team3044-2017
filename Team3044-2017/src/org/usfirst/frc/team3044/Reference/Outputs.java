@@ -5,17 +5,17 @@ import com.ctre.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
 
-public class Components {
+public class Outputs {
 
-	private static Components instance = null;
+	private static Outputs instance = null;
 	
-	private Components() {
+	private Outputs() {
 
 	}
  
-	public static Components getInstance() {
+	public static Outputs getInstance() {
 		if (instance == null) {
-			instance = new Components();
+			instance = new Outputs();
 		}
 		return instance;
 	}

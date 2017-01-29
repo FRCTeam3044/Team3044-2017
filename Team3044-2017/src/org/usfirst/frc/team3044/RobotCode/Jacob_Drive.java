@@ -38,7 +38,7 @@ public class Jacob_Drive {
 	BufferedWriter bw;
 	FileWriter fw;
 	int i;
-	private Components comp = Components.getInstance();
+	private Outputs comp = Outputs.getInstance();
 	//establishes controller deadbands for the two sticks along with the math to be used for the following code
 	public double deadband(double value){
 		if(Math.abs(value) < .1){
@@ -80,8 +80,8 @@ public class Jacob_Drive {
 	}
 
 	public void driveAutoPeriodic() {
-		leftAutoSpeed = CommonArea.leftAutoSpeed;
-		rightAutoSpeed = -CommonArea.rightAutoSpeed;
+		leftAutoSpeed = inputs.leftAutoSpeed;
+		rightAutoSpeed = -inputs.rightAutoSpeed;
 	}
 
 	public void driveTeleopPeriodic() {
@@ -142,10 +142,10 @@ public class Jacob_Drive {
 			gearServo.set(0);			
 		}
 		
-		SmartDashboard.putString("DB/String 5", String.valueOf("Left Front " + Components.getInstance().leftFrontDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 6", String.valueOf("Right Front " + Components.getInstance().rightFrontDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 7", String.valueOf("Left Back " + Components.getInstance().leftBackDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 8", String.valueOf("Right Back " + Components.getInstance().rightBackDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 5", String.valueOf("Left Front " + Outputs.getInstance().leftFrontDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 6", String.valueOf("Right Front " + Outputs.getInstance().rightFrontDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 7", String.valueOf("Left Back " + Outputs.getInstance().leftBackDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 8", String.valueOf("Right Back " + Outputs.getInstance().rightBackDrive.getOutputCurrent()));
 		i++;
 	}
 

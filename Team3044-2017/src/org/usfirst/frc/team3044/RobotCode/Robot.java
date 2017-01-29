@@ -18,7 +18,7 @@ public class Robot extends IterativeRobot {
 	DiagnosticsServer diagnosticsServer = new DiagnosticsServer(); 
 	
 	public void robotInit() {
-		Components.getInstance().init();
+		Outputs.getInstance().init();
 		controller.getInstance();
 		drive.driveInit();
 	}
@@ -31,12 +31,12 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopInit() {
-		Components.getInstance().init();
+		Outputs.getInstance().init();
 		drive.driveInit();
 	}
 
 	public void teleopPeriodic() {
-		CommonArea.CommonPeriodic();
+		inputs.CommonPeriodic();
 		drive.driveTeleopPeriodic();
 	}
 
@@ -57,6 +57,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testPeriodic() {
-		CommonArea.CommonPeriodic();
+		inputs.CommonPeriodic();
 	}
 }

@@ -28,7 +28,7 @@ public class shooter {
 	BufferedWriter bw;
 	FileWriter fw;
 	int i;
-	private Components comp = Components.getInstance();
+	private Outputs comp = Outputs.getInstance();
 
 	public void driveInit() {
 
@@ -72,16 +72,11 @@ public class shooter {
 		}
 	
 		
-		
-		
-		
-		
-		
 		{
-		SmartDashboard.putString("DB/String 5", String.valueOf("Left Front " + Components.getInstance().leftFrontDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 6", String.valueOf("Right Front " + Components.getInstance().rightFrontDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 7", String.valueOf("Left Back " + Components.getInstance().leftBackDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 8", String.valueOf("Right Back " + Components.getInstance().rightBackDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 5", String.valueOf("Left Front " + Outputs.getInstance().leftFrontDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 6", String.valueOf("Right Front " + Outputs.getInstance().rightFrontDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 7", String.valueOf("Left Back " + Outputs.getInstance().leftBackDrive.getOutputCurrent()));
+		SmartDashboard.putString("DB/String 8", String.valueOf("Right Back " + Outputs.getInstance().rightBackDrive.getOutputCurrent()));
 		i++;}}}}
 		
 	

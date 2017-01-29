@@ -3,7 +3,7 @@ package org.usfirst.frc.team3044.Reference;
 import org.usfirst.frc.team3044.Reference.FirstController;
 import org.usfirst.frc.team3044.Reference.SecondaryController;
 
-public class CommonArea {
+public class inputs {
 	
 	static FirstController firstJoy = FirstController.getInstance();
 	static SecondaryController secondaryJoy = SecondaryController.getInstance();
