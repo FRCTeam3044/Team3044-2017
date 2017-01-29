@@ -27,9 +27,9 @@ public class Components {
 	public CANTalon rightBackDrive;
 
 	// Shooter
-	public CANTalon topShooter;
-	public CANTalon botShooter;
-
+	public CANTalon shooter;
+	public CANTalon agitator;
+	public CANTalon angle;
 	// Defense
 	public CANTalon daltonArm;
 		
@@ -40,9 +40,10 @@ public class Components {
 		leftBackDrive = new CANTalon(2);
 		rightFrontDrive = new CANTalon(7);
 		rightBackDrive = new CANTalon(9);
-
-		leftFrontDrive.setFeedbackDevice(FeedbackDevice.AnalogEncoder);
-		rightFrontDrive.setFeedbackDevice(FeedbackDevice.AnalogEncoder);
+		angle = new CANTalon(4);
+		agitator = new CANTalon(3);
+		shooter = new CANTalon(1);
+	
 
 	}
 }
