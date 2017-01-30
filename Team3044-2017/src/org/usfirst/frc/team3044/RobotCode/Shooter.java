@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class shooter {
+public class Shooter {
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 
 	FirstController controller = FirstController.getInstance();

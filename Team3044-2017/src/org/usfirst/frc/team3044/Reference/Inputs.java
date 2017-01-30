@@ -1,12 +1,12 @@
 package org.usfirst.frc.team3044.Reference;
 
 import org.usfirst.frc.team3044.Reference.FirstController;
-import org.usfirst.frc.team3044.Reference.SecondaryController;
+import org.usfirst.frc.team3044.Reference.SecondController;
 
-public class inputs {
+public class Inputs {
 	
 	static FirstController firstJoy = FirstController.getInstance();
-	static SecondaryController secondaryJoy = SecondaryController.getInstance();
+	static SecondController secondaryJoy = SecondController.getInstance();
 	
 	//Drive 
 	public static double leftDriveSpeed;
@@ -102,16 +102,16 @@ public class inputs {
 		autoAlign = firstJoy.getTriggerRight();
 		
 		//SecondaryController
-		UP = secondaryJoy.getRawButton(SecondaryController.BUTTON_Y);
-		DOWN = secondaryJoy.getRawButton(SecondaryController.BUTTON_A);
+		UP = secondaryJoy.getRawButton(SecondController.BUTTON_Y);
+		DOWN = secondaryJoy.getRawButton(SecondController.BUTTON_A);
 		X1 = false;//secondaryJoy.getRawButton(SecondaryController.BUTTON_Y);
 		X2 = false; //secondaryJoy.getRawButton(SecondaryController.BUTTON_X);
 		Y2 = false;//secondaryJoy.getRawButton(SecondaryController.BUTTON_A);
-		Y1 = secondaryJoy.getRawButton(SecondaryController.BUTTON_B);
-		H2 = secondaryJoy.getRawButton(SecondaryController.BUTTON_LB);
-		H1 = secondaryJoy.getRawButton(SecondaryController.BUTTON_RB);
-		CAL = secondaryJoy.getRawButton(SecondaryController.BUTTON_BACK);
-		STOP_TARGETING = secondaryJoy.getRawButton(SecondaryController.BUTTON_START);
+		Y1 = secondaryJoy.getRawButton(SecondController.BUTTON_B);
+		H2 = secondaryJoy.getRawButton(SecondController.BUTTON_LB);
+		H1 = secondaryJoy.getRawButton(SecondController.BUTTON_RB);
+		CAL = secondaryJoy.getRawButton(SecondController.BUTTON_BACK);
+		STOP_TARGETING = secondaryJoy.getRawButton(SecondController.BUTTON_START);
 		UA_Up = secondaryJoy.getDPadUp();
 		LA_Up = secondaryJoy.getDPadRight();
 		UA_Down = secondaryJoy.getDPadDown();

@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
-		inputs.CommonPeriodic();
+		Inputs.CommonPeriodic();
 		drive.driveTeleopPeriodic();
 	}
 
@@ -57,6 +57,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testPeriodic() {
-		inputs.CommonPeriodic();
+		Inputs.CommonPeriodic();
 	}
 }

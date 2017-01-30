@@ -7,7 +7,7 @@ import org.usfirst.frc.team3044.robot.Robot.state;
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Climbing {
+public class Climber {
 	FirstController controller = FirstController.getInstance();
 
 	// states states
@@ -16,21 +16,21 @@ public class Climbing {
 	}
 
 	// climber starts the match stopped
-	state climbingState = state.STOPPED;
+	state climberState = state.STOPPED;
 	double winchDriveSpeed;
 	
 	// sets up CANTalon
 	public CANTalon winchDrive = new CANTalon(1);
 
-	public void climbingInit() {
+	public void climberInit() {
 
 	}
 
-	public void climbingAutPeriodic() {
+	public void climberAutPeriodic() {
 
 	}
 
-	public void climbingTeleopPeriodic() {
+	public void climberTeleopPeriodic() {
 
 		/*
 		 * creates the variables for the left and right triggers, makes them
@@ -41,18 +41,18 @@ public class Climbing {
 		double rightTrig = Math.abs(controller.firstJoy.getRawAxis(3));
 		boolean bothPressed = false;
 
-		switch (climbingState) {
+		switch (climberState) {
 
 		case STOPPED:
 			// if the only the left trigger is pressed, the robot descends
 			if (leftTrig > 0 && !bothPressed) {
-				climbingState = state.MOVINGDOWN;
+				climberState = state.MOVINGDOWN;
 				winchDriveSpeed = leftTrig;
 			}
 
 			// if only the right trigger is pressed, the robot climbs
 			else if (rightTrig > 0 && !bothPressed) {
-				climbingState = state.MOVINGUP;
+				climberState = state.MOVINGUP;
 				winchDriveSpeed = rightTrig;
 			}
 
@@ -64,17 +64,17 @@ public class Climbing {
 			// if both triggers are pressed, the climber stops
 			if (leftTrig > 0 && rightTrig > 0) {
 				bothPressed = true;
-				climbingState = state.STOPPED;
+				climberState = state.STOPPED;
 				winchDriveSpeed = 0;
 			}
 			// if ONLY the right trigger is pressed, the robot climbs
 			else if (rightTrig > 0 && !bothPressed) {
-				climbingState = state.MOVINGUP;
+				climberState = state.MOVINGUP;
 				winchDriveSpeed = rightTrig;
 			}
 			// if BOTH triggers are pressed, the climber stops
 			else if (rightTrig == 0 && leftTrig == 0) {
-				climbingState = state.STOPPED;
+				climberState = state.STOPPED;
 				winchDriveSpeed = 0;
 
 			}
@@ -86,18 +86,18 @@ public class Climbing {
 			// if BOTH triggers are pressed, the climber stops
 			if (leftTrig > 0 && rightTrig > 0) {
 				bothPressed = true;
-				climbingState = state.STOPPED;
+				climberState = state.STOPPED;
 				winchDriveSpeed = 0;
 			}
 			// if the only the left trigger is pressed, the robot descends
 			else if (leftTrig > 0 && !bothPressed) {
-				climbingState = state.MOVINGDOWN;
+				climberState = state.MOVINGDOWN;
 				winchDriveSpeed = leftTrig;
 			}
 
 			// if neither trigger is pressed, the climber stops (duh)
 			else if (rightTrig == 0 && leftTrig == 0) {
-				climbingState = state.STOPPED;
+				climberState = state.STOPPED;
 				winchDriveSpeed = 0;
 
 			}

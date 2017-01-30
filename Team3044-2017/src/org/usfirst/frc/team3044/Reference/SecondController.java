@@ -3,8 +3,8 @@ package org.usfirst.frc.team3044.Reference;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 
-public class SecondaryController {
-	private static SecondaryController instance = null;
+public class SecondController {
+	private static SecondController instance = null;
 
 	private Joystick secondJoy;
 
@@ -18,13 +18,13 @@ public class SecondaryController {
 	public static int BUTTON_BACK = 7;
 	public static int BUTTON_START = 8;
 
-	private SecondaryController() {
+	private SecondController() {
 		secondJoy = new Joystick(1);
 	}
 
-	public static SecondaryController getInstance() {
+	public static SecondController getInstance() {
 		if (instance == null) {
-			instance = new SecondaryController();
+			instance = new SecondController();
 		}
 		return instance;
 	}
