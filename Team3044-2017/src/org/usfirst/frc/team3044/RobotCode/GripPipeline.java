@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class VisionPipeline {
+public class GripPipeline {
 
 	public void visionPipelineAutoInit() {
 	}

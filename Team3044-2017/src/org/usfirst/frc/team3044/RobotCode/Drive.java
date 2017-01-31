@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+//
 public class Drive {
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	//states buttons and joystick
@@ -80,8 +80,8 @@ public class Drive {
 	}
 
 	public void driveAutoPeriodic() {
-		leftAutoSpeed = Inputs.leftAutoSpeed;
-		rightAutoSpeed = -Inputs.rightAutoSpeed;
+		leftAutoSpeed = inputs.leftAutoSpeed;
+		rightAutoSpeed = -inputs.rightAutoSpeed;
 	}
 
 	public void driveTeleopPeriodic() {
