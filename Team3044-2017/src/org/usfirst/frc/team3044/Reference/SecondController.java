@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Joystick;
 public class SecondController {
 	private static SecondController instance = null;
 
-	private Joystick secondJoy;
+	public Joystick secondJoy;
 
 	public static int BUTTON_X = 3;
 	public static int BUTTON_Y = 4;

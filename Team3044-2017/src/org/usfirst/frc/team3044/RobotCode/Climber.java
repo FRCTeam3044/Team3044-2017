@@ -8,7 +8,7 @@ import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber {
-	FirstController controller = FirstController.getInstance();
+	SecondController controller = SecondController.getInstance();
 
 	// states states
 	public enum state {
@@ -37,8 +37,8 @@ public class Climber {
 		 * always positive, and creates a variable for if both are pressed
 		 */
 
-		double leftTrig = Math.abs(controller.firstJoy.getRawAxis(2));
-		double rightTrig = Math.abs(controller.firstJoy.getRawAxis(3));
+		double leftTrig = Math.abs(controller.secondJoy.getRawAxis(2));
+		double rightTrig = Math.abs(controller.secondJoy.getRawAxis(3));
 		boolean bothPressed = false;
 
 		switch (climberState) {
