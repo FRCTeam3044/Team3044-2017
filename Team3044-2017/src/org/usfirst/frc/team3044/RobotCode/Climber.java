@@ -1,7 +1,7 @@
 package org.usfirst.frc.team3044.RobotCode;
 
 import org.usfirst.frc.team3044.Reference.*;
-import org.usfirst.frc.team3044.robot.FirstController;
+import org.usfirst.frc.team3044.robot.SecondController;
 import org.usfirst.frc.team3044.robot.Robot.state;
 
 import com.ctre.CANTalon;
@@ -18,7 +18,7 @@ public class Climber {
 	// climber starts the match stopped
 	state climberState = state.STOPPED;
 	double winchDriveSpeed;
-	
+
 	// sets up CANTalon
 	public CANTalon winchDrive = new CANTalon(1);
 
