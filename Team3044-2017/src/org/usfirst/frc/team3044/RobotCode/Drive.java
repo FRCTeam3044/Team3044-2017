@@ -80,8 +80,8 @@ public class Drive {
 	}
 
 	public void driveAutoPeriodic() {
-		leftAutoSpeed = inputs.leftAutoSpeed;
-		rightAutoSpeed = -inputs.rightAutoSpeed;
+		//leftAutoSpeed = inputs.leftAutoSpeed;
+		//rightAutoSpeed = -inputs.rightAutoSpeed;
 	}
 
 	public void driveTeleopPeriodic() {
