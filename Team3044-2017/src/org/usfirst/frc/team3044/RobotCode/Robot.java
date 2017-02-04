@@ -14,6 +14,7 @@ public class Robot extends IterativeRobot {
 	Drive drive = new Drive();
 	FirstController controller;
 	private double Dashboard;
+	org.usfirst.frc.team3044.RobotCode.Vision vision = new org.usfirst.frc.team3044.RobotCode.Vision(); 
 	
 	DiagnosticsServer diagnosticsServer = new DiagnosticsServer(); 
 	
@@ -21,6 +22,8 @@ public class Robot extends IterativeRobot {
 		Outputs.getInstance().init();
 		controller.getInstance();
 		drive.driveInit();
+		// Change this 
+		vision.autonomousInit();
 	}
 
 	public void autonomousInit() {
@@ -33,11 +36,13 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		Outputs.getInstance().init();
 		drive.driveInit();
+		
 	}
 
 	public void teleopPeriodic() {
 		Inputs.CommonPeriodic();
 		drive.driveTeleopPeriodic();
+
 	}
 
 	public void disabledInit() {
@@ -58,5 +63,7 @@ public class Robot extends IterativeRobot {
 
 	public void testPeriodic() {
 		Inputs.CommonPeriodic();
+		// Change this
+		vision.autonomousPeriodic();
 	}
 }
