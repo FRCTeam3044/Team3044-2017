@@ -19,15 +19,29 @@ public class Vision extends IterativeRobot {
 	private RobotDrive drive;
 	private final Object imgLock = new Object();
 
+	GripPipeline pipeline = new GripPipeline(); 
 	@Override
 	public void robotInit() {
 		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();  //Info on this at https://www.chiefdelphi.com/forums/showpost.php?p=1425235&postcount=6
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);							//Above, put camera name inside () of startAutomaticCapture() in quotes
+		
 		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
 			if (!pipeline.filterContoursOutput().isEmpty()) {
-				Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(0));
-				synchronized (imgLock) {
-					centerX = r.x + (r.width / 2);
+				
+				/**  This will be the main vision processing algorthim implementation **/
+				
+				if (pipeline.filterContoursOutput().size() > 1) { 
+					
+					Rect[] rectangles= new Rect[pipeline.filterContoursOutput().size()];
+					
+					for (int i=0; i < pipeline.filterContoursOutput().size(); i++ )
+					{
+						Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(i));
+						
+						synchronized (imgLock) {
+							centerX = r.x + (r.width / 2);
+						}
+					}
 				}
 			}
 		});
@@ -37,11 +51,15 @@ public class Vision extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
+		
+
+		
+		/*
 		double centerX;
 		synchronized (imgLock) {
 			centerX = this.centerX;
 		}
 		double turn = centerX - (IMG_WIDTH / 2);
-		drive.arcadeDrive(-0.6, turn * 0.005);
+		drive.arcadeDrive(-0.6, turn * 0.005);*/
 	}
 }
