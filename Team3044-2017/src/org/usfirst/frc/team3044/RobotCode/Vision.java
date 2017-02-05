@@ -1,8 +1,13 @@
 package org.usfirst.frc.team3044.RobotCode;
 
+import org.opencv.core.Mat;
 import org.opencv.core.Rect;
 import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
+
 import com.ctre.CANTalon;
+
+import edu.wpi.cscore.AxisCamera;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -22,18 +27,31 @@ public class Vision extends IterativeRobot {
 	int rect1_y; 
 	int rect2_y; 
 	double rect1_area; 
-	double rect2_area;  
+	double rect2_area;
+	int n_rectangles ; 
+	int n_countours; 
 	
 	private RobotDrive drive;
 	private final Object imgLock = new Object();
 
-	GripPipeline pipeline = new GripPipeline(); 
+
 	@Override
 	public void robotInit() {
-		UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();  //Info on this at https://www.chiefdelphi.com/forums/showpost.php?p=1425235&postcount=6
+		AxisCamera camera = CameraServer.getInstance().addAxisCamera("cam0");
+		
+		//CameraServer.getInstance().startAutomaticCapture();  //Info on this at https://www.chiefdelphi.com/forums/showpost.php?p=1425235&postcount=6
+		
 		camera.setResolution(IMG_WIDTH, IMG_HEIGHT);							//Above, put camera name inside () of startAutomaticCapture() in quotes
 		
+		
 		visionThread = new VisionThread(camera, new GripPipeline(), pipeline -> {
+			
+			Mat image=new Mat(); 
+			
+			CameraServer.getInstance().getVideo("cam0").grabFrame(image);
+			
+			pipeline.process(image);
+				
 			if (!pipeline.filterContoursOutput().isEmpty()) {
 				
 				/**  This will be the main vision processing algorthim implementation **/
@@ -42,35 +60,43 @@ public class Vision extends IterativeRobot {
 					
 					Rect[] rectangles= new Rect[pipeline.filterContoursOutput().size()];
 					
+					this.n_countours= pipeline.filterContoursOutput().size(); 
+					
 					for (int i=0; i < pipeline.filterContoursOutput().size(); i++ )
 					{
 						Rect r = Imgproc.boundingRect(pipeline.filterContoursOutput().get(i));
 					}
 					synchronized (imgLock) {
-						rect1_x=  rectangles[0].x; 
-						rect1_y = rectangles[0].y; 
-						rect1_area = rectangles[0].area(); 
-						rect2_x=  rectangles[1].x; 
-						rect2_y = rectangles[1].y; 
-						rect2_area = rectangles[1].area(); 
+						this.rect1_x=  rectangles[0].x; 
+						this.rect1_y = rectangles[0].y; 
+						this.rect1_area = rectangles[0].area(); 
+						this.rect2_x=  rectangles[1].x; 
+						this.rect2_y = rectangles[1].y; 
+						this.rect2_area = rectangles[1].area(); 
+						this.n_rectangles = rectangles.length;
+						
 					}
 				}
 			}
 		});
 		visionThread.start();
-		drive = new RobotDrive(1, 2);
 	}
 
 	@Override
 	public void autonomousPeriodic() {
 		
+		
+		
 		synchronized (imgLock) { 
-			SmartDashboard.putString("DB/String 1", "rect1_x: " +  String.valueOf(rect1_x)); 
-			SmartDashboard.putString("DB/String 2", "rect1_y: " +  String.valueOf(rect1_y)); 
-			SmartDashboard.putString("DB/String 3", "rect1_area: " +  String.valueOf(rect1_area)); 
-			SmartDashboard.putString("DB/String 5", "rect2_x: " +  String.valueOf(rect2_x));
-			SmartDashboard.putString("DB/String 6", "rect1_y: " +  String.valueOf(rect1_y));
-			SmartDashboard.putString("DB/String 1", "rect1_area: " +  String.valueOf(rect1_area)); 
+			SmartDashboard.putString("DB/String 0", "rect1_x: " +  String.valueOf(this.rect1_x)); 
+			SmartDashboard.putString("DB/String 1", "rect1_y: " +  String.valueOf(this.rect1_y)); 
+			SmartDashboard.putString("DB/String 2", "rect1_area: " +  String.valueOf(this.rect1_area)); 
+			SmartDashboard.putString("DB/String 3", "n_rectangles: " +  String.valueOf(this.n_rectangles)); 
+			SmartDashboard.putString("DB/String 4", "n_contours: " +  String.valueOf(this.n_countours)); 
+			
+			SmartDashboard.putString("DB/String 5", "rect2_x: " +  String.valueOf(this.rect2_x));
+			SmartDashboard.putString("DB/String 6", "rect2_y: " +  String.valueOf(this.rect2_y));
+			SmartDashboard.putString("DB/String 7", "rect2_area: " +  String.valueOf(this.rect2_area)); 
 		}
 		
 	}

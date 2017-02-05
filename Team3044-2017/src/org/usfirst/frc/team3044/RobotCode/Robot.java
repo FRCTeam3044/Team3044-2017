@@ -23,7 +23,7 @@ public class Robot extends IterativeRobot {
 		controller.getInstance();
 		drive.driveInit();
 		// Change this 
-		vision.autonomousInit();
+		
 	}
 
 	public void autonomousInit() {
@@ -52,6 +52,8 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testInit() {
+		vision.robotInit();
+		vision.autonomousInit();
 		try { 
 		diagnosticsServer.start(0, true);
 		}

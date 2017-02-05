@@ -3,12 +3,15 @@ package org.usfirst.frc.team3044.RobotCode;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 
 import org.opencv.core.*;
@@ -43,6 +46,11 @@ public class GripPipeline implements VisionPipeline {
 	 */
 	@Override	public void process(Mat source0) {
 		// Step HSL_Threshold0:
+		
+		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		
+		SmartDashboard.putString("DB/String 9", f.format(new Date())); 
+		
 		Mat hslThresholdInput = source0;
 		double[] hslThresholdHue = {61.510791366906474, 132.38907849829351};
 		double[] hslThresholdSaturation = {204.09172661870502, 255.0};
