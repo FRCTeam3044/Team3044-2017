@@ -47,10 +47,6 @@ public class GripPipeline implements VisionPipeline {
 	@Override	public void process(Mat source0) {
 		// Step HSL_Threshold0:
 		
-		SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-		
-		SmartDashboard.putString("DB/String 9", f.format(new Date())); 
-		
 		Mat hslThresholdInput = source0;
 		double[] hslThresholdHue = {61.510791366906474, 132.38907849829351};
 		double[] hslThresholdSaturation = {204.09172661870502, 255.0};
@@ -85,7 +81,7 @@ public class GripPipeline implements VisionPipeline {
 		double filterContoursMinArea = 130.0;
 		double filterContoursMinPerimeter = 20.0;
 		double filterContoursMinWidth = 5.0;
-		double filterContoursMaxWidth = 50.0;
+		double filterContoursMaxWidth = 100.0;
 		double filterContoursMinHeight = 0.0;
 		double filterContoursMaxHeight = 1000.0;
 		double[] filterContoursSolidity = {0, 100};

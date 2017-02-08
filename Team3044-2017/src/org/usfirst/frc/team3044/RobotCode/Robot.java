@@ -3,6 +3,8 @@ package org.usfirst.frc.team3044.RobotCode;
 import org.usfirst.frc.team3044.RobotCode.*;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.usfirst.frc.team3044.Reference.*;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,6 +33,7 @@ public class Robot extends IterativeRobot {
 
 
 	public void autonomousPeriodic() {
+		
 	}
 
 	public void teleopInit() {
@@ -40,6 +43,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void teleopPeriodic() {
+		
 		Inputs.CommonPeriodic();
 		drive.driveTeleopPeriodic();
 
