@@ -6,7 +6,7 @@ import org.usfirst.frc.team3044.Reference.SecondController;
 public class Inputs {
 	
 	static FirstController firstJoy = FirstController.getInstance();
-	static SecondController secondaryJoy = SecondController.getInstance();
+	static SecondController secondJoy = SecondController.getInstance();
 	
 	//Drive 
 	public static double leftDriveSpeed;
@@ -83,40 +83,29 @@ public class Inputs {
 	public static boolean UP;
 	public static boolean DOWN;
 	
-	public static void CommonPeriodic(){
+	public static void inputsPeriodic(){
 		
 		//FirstController
-		gateUp = firstJoy.getRawButton(FirstController.BUTTON_Y) || secondaryJoy.getRawButton(FirstController.BUTTON_Y);
-		manualFire = firstJoy.getRawButton(FirstController.BUTTON_X) || secondaryJoy.getRawButton(FirstController.BUTTON_X);
-		gateDown = firstJoy.getRawButton(FirstController.BUTTON_A) || secondaryJoy.getRawButton(FirstController.BUTTON_A);
-		ejectBack = firstJoy.getRawButton(FirstController.BUTTON_B);
-		pickRollersOut = firstJoy.getRawButton(FirstController.BUTTON_LB) || secondaryJoy.getRawButton(FirstController.BUTTON_LB);
-		pickRollersIn = firstJoy.getRawButton(FirstController.BUTTON_RB) || secondaryJoy.getRawButton(FirstController.BUTTON_RB);
-		getShootertoAutoSpeed = firstJoy.getRawButton(FirstController.BUTTON_BACK);
-		setSpeed = firstJoy.getRawButton(FirstController.BUTTON_START);
-		portcullius = firstJoy.getDPadUp();
-		calibrate = firstJoy.getDPadRight();
-		chevalDeFrise = firstJoy.getDPadDown();
-		pickUpBoulder = firstJoy.getDPadLeft();
-		shooterToSpeed = firstJoy.getTriggerLeft() || secondaryJoy.getTriggerLeft();
-		autoAlign = firstJoy.getTriggerRight();
+		secondJoy.getLeftX();
+		secondJoy.getLeftY();
+		secondJoy.getRightX();
 		
 		//SecondaryController
-		UP = secondaryJoy.getRawButton(SecondController.BUTTON_Y);
-		DOWN = secondaryJoy.getRawButton(SecondController.BUTTON_A);
+		UP = secondJoy.getRawButton(SecondController.BUTTON_Y);
+		DOWN = secondJoy.getRawButton(SecondController.BUTTON_A);
 		X1 = false;//secondaryJoy.getRawButton(SecondaryController.BUTTON_Y);
 		X2 = false; //secondaryJoy.getRawButton(SecondaryController.BUTTON_X);
 		Y2 = false;//secondaryJoy.getRawButton(SecondaryController.BUTTON_A);
-		Y1 = secondaryJoy.getRawButton(SecondController.BUTTON_B);
-		H2 = secondaryJoy.getRawButton(SecondController.BUTTON_LB);
-		H1 = secondaryJoy.getRawButton(SecondController.BUTTON_RB);
-		CAL = secondaryJoy.getRawButton(SecondController.BUTTON_BACK);
-		STOP_TARGETING = secondaryJoy.getRawButton(SecondController.BUTTON_START);
-		UA_Up = secondaryJoy.getDPadUp();
-		LA_Up = secondaryJoy.getDPadRight();
-		UA_Down = secondaryJoy.getDPadDown();
-		LA_Down = secondaryJoy.getDPadLeft();
-		AVALAIBLELT = secondaryJoy.getTriggerLeft();
-		AVALAIBLERT = secondaryJoy.getTriggerRight();
+		Y1 = secondJoy.getRawButton(SecondController.BUTTON_B);
+		H2 = secondJoy.getRawButton(SecondController.BUTTON_LB);
+		H1 = secondJoy.getRawButton(SecondController.BUTTON_RB);
+		CAL = secondJoy.getRawButton(SecondController.BUTTON_BACK);
+		STOP_TARGETING = secondJoy.getRawButton(SecondController.BUTTON_START);
+		UA_Up = secondJoy.getDPadUp();
+		LA_Up = secondJoy.getDPadRight();
+		UA_Down = secondJoy.getDPadDown();
+		LA_Down = secondJoy.getDPadLeft();
+		AVALAIBLELT = secondJoy.getTriggerLeft();
+		AVALAIBLERT = secondJoy.getTriggerRight();
 	}
 }

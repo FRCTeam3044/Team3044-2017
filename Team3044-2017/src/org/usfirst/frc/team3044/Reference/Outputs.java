@@ -25,14 +25,19 @@ public class Outputs {
 	public CANTalon leftBackDrive;
 	public CANTalon rightFrontDrive;
 	public CANTalon rightBackDrive;
+	
+	// Climber
+	
 
 	// Shooter
 	public CANTalon shooter;
 	public CANTalon agitator;
-	public CANTalon angle;
-	// Defense
-	public CANTalon daltonArm;
-		
+	
+	// Gear
+	public CANTalon gearMotor;
+	
+	// Pickup
+	public CANTalon pickUp;
 
 
 	public void init() {
@@ -40,9 +45,9 @@ public class Outputs {
 		leftBackDrive = new CANTalon(2);
 		rightFrontDrive = new CANTalon(7);
 		rightBackDrive = new CANTalon(9);
-		angle = new CANTalon(4);
 		agitator = new CANTalon(3);
 		shooter = new CANTalon(1);
+		pickUp = new CANTalon(4);
 	
 
 	}
