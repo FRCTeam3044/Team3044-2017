@@ -8,17 +8,24 @@ import com.ctre.CANTalon.TalonControlMode;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.usfirst.frc.team3044.Reference.SecondController;
 
-//test
 public class Gear {
-	//We are using cantalons which controls motors to extend and retract
+	//We are using CANTalons which controls motors to extend and retract
 	//start closed
 	//port number might change as Cassie is using 1 & 2 such as 3 & 4 
-public CANTalon GearCantalon = new CANTalon(1);
+public CANTalon GearCANTalon;
+
 	//public CANTalon GearCantalon = new CANTalon(2)
 public DigitalInput limitSwitch1 = new DigitalInput(1);
 public DigitalInput limitSwitch2 = new DigitalInput(2);
+
+public Outputs out = Outputs.getInstance();
+
+public Gear(){
+	
+	
+	GearCANTalon = out.GearCANTalon;
+}
 
 //Code does not have breaks as I am not sure where to use them
 //As of 2/11/17 CANTalons not solenoids
@@ -32,7 +39,7 @@ public DigitalInput limitSwitch2 = new DigitalInput(2);
 	public void gearInit() {
 		//called once, when robot starts up. Use limit switches
 		//Motor starts off 
-				GearCantalon.set(0);
+		GearCANTalon.set(0);
 	}
 
 /****************************************************************************
@@ -56,12 +63,12 @@ public DigitalInput limitSwitch2 = new DigitalInput(2);
 		//X = out or extending
 		 boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X) ;
 		 
-		 if(buttonXPressed){
-			 GearCantalon.set(1);
-		 }else if(buttonBPressed){
-			 GearCantalon.set(0);
+		 if(buttonXPressed && !limitSwitch1.get()){
+			 GearCANTalon.set(1);
+		 }else if(buttonBPressed && !limitSwitch2.get()){
+			 GearCANTalon.set(0);
 		 }else{
-			 GearCantalon.set(0);
+			 GearCANTalon.set(0);
 		 }
 		 
 }

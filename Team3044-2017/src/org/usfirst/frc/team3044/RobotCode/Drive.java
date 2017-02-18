@@ -20,27 +20,33 @@ public class Drive {
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	FirstController controller = FirstController.getInstance();
 
-	// true false statement activated by the start button to invert the mecanum drive controls
+	// true false statement activated by the start button to invert the mecanum
+	// drive controls
 
 	boolean TFlip = false;
-	
+
 	// establishes the 4 motors for drive wheels
-	
+
 	public CANTalon leftFrontDrive;
 	public CANTalon leftBackDrive;
 	public CANTalon rightFrontDrive;
 	public CANTalon rightBackDrive;
 
-	double dashData = SmartDashboard.getNumber("DB/Slider 0", 0.0);
-	
-	private Outputs comp = Outputs.getInstance();
+	Timer time = new Timer();
 
-	/* establishes controller deadbands for the two sticks so that the motors only activate once 
-	*the sticks have passed .2 value on the X and or Y axis 
-	*/
-	
+	int state = 0;
+
+	double dashData = SmartDashboard.getNumber("DB/Slider 0", 0.0);
+
+	public Outputs out = Outputs.getInstance();
+
+	/*
+	 * establishes controller deadbands for the two sticks so that the motors
+	 * only activate once the sticks have passed .2 value on the X and or Y axis
+	 */
+
 	public double deadband(double value) {
-		if (Math.abs(value) < .2) {
+		if (Math.abs(value) < .05) {
 			return 0;
 		} else {
 			return value;
@@ -48,19 +54,20 @@ public class Drive {
 	}
 
 	public void driveInit() {
-		
-		/* pulls 4 motors from the output class states (left right front back) and sets int
-		*variable of i to 0
-		*/
-		
-	
-		leftFrontDrive = comp.leftFrontDrive;
-		leftBackDrive = comp.leftBackDrive;
-		rightFrontDrive = comp.rightFrontDrive;
-		rightBackDrive = comp.rightBackDrive;
-		
-		// sets the drive motors at the beginning of teleop mode so they are stopped (brake mode)
-		
+
+		/*
+		 * pulls 4 motors from the output class states (left right front back)
+		 * and sets int variable of i to 0
+		 */
+
+		leftFrontDrive = out.leftFrontDrive;
+		leftBackDrive = out.leftBackDrive;
+		rightFrontDrive = out.rightFrontDrive;
+		rightBackDrive = out.rightBackDrive;
+
+		// sets the drive motors at the beginning of teleop mode so they are
+		// stopped (brake mode)
+
 		leftFrontDrive.set(0);
 		leftBackDrive.set(0);
 		rightFrontDrive.set(0);
@@ -69,68 +76,78 @@ public class Drive {
 		rightFrontDrive.enableBrakeMode(true);
 		leftBackDrive.enableBrakeMode(true);
 		rightBackDrive.enableBrakeMode(true);
-		
-		// writes errors (failures) in the motor info file or creates it if it is not there
-		
-		/*try {
-			f = new File("/home/lvuser/Motor Information.txt");
-			if (!f.exists()) {
-				f.createNewFile();
-			}
-			fw = new FileWriter(f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		*/
+
+		// writes errors (failures) in the motor info file or creates it if it
+		// is not there
+
+		/*
+		 * try { f = new File("/home/lvuser/Motor Information.txt"); if
+		 * (!f.exists()) { f.createNewFile(); } fw = new FileWriter(f); } catch
+		 * (IOException e) { e.printStackTrace(); }
+		 */
+	}
+
+	public void driveAutoInit() {
+
 	}
 
 	public void driveAutoPeriodic() {
-	
 
-		//cross line for auto period
-		
-		if(dashData == 1)//DB slider 1 is set to 1
-		{
-			leftFrontDrive.set(20);
-			leftBackDrive.set(20);
-			rightFrontDrive.set(20);
-			rightBackDrive.set(20);
-		
-			Timer.delay(5);
-		
-			leftFrontDrive.set(0);
-			leftBackDrive.set(0);
-			rightFrontDrive.set(0);
-			rightBackDrive.set(0);
-		}
-		
-		if(dashData == 1)//DB slider 1 is set to 1
-		{
-			
-			
+		// TEST AUTO CODE
+		switch (state) {
+		case 0:
+			System.out.println("I'M CASE 0");
+
+			leftFrontDrive.set(.25);
+			leftBackDrive.set(.25);
+			rightFrontDrive.set(-.25);
+			rightBackDrive.set(-.25);
+
+			time.start();
+			state = 1;
+
+			break;
+
+		case 1:
+			System.out.println("WAITING");
+			if (time.get() > 10) {
+				leftFrontDrive.set(0);
+				leftBackDrive.set(0);
+				rightFrontDrive.set(0);
+				rightBackDrive.set(0);
+				
+				System.out.println("AUTO COMPLETE");
+				
+				state = 5;
+			}
+			break;
+
 		}
 
 	}
 
 	public void driveTeleopPeriodic() {
 
-		/* establishes x as the value of the x axis on the left stick, y as the
-		* value of the y axis for the left stick and r as the x value of the
-		* right stick
-		*/
-		double x = -deadband(controller.getLeftX());
-		double y = deadband(controller.getLeftY());
-		double r = deadband(controller.getRightX());
-		
-		// sets the algorithm based on the controller inputs that will later affect the motors
-		
+		/*
+		 * establishes x as the value of the x axis on the left stick, y as the
+		 * value of the y axis for the left stick and r as the x value of the
+		 * right stick
+		 */
+		double x = -deadband(controller.getLeftX()); // x direction
+		double y = deadband(controller.getLeftY()); // y direction
+		double r = deadband(controller.getRightX()); // rotation
+
+		// sets the algorithm based on the controller inputs that will later
+		// affect the motors
+
 		double v_FrontLeft = r - y - x;
 		double v_FrontRight = r + y - x;
 		double v_BackLeft = r - y + x;
 		double v_BackRight = r + y + x;
 
-		// uses the double, f, to regulate the algorithm for when it later used to power motors
-		
+		// uses the double, f, to regulate the algorithm for when it later used
+		// to power motors
+
 		double f = 1;
 		if (Math.abs(v_FrontLeft) > f)
 			f = v_FrontLeft;
@@ -141,8 +158,9 @@ public class Drive {
 		if (Math.abs(v_BackRight) > f)
 			f = v_BackRight;
 
-		// when start button is held for half a second the controls invert and stops the robot 
-		
+		// when start button is held for half a second the controls invert and
+		// stops the robot
+
 		if (controller.getRawButton(FirstController.BUTTON_START)) {
 			leftFrontDrive.set(0);
 			leftBackDrive.set(0);
@@ -150,20 +168,22 @@ public class Drive {
 			rightBackDrive.set(0);
 			TFlip = !TFlip;
 		}
-		
-		// if TFlip is true then it inverts the motor speeds that will be used later on
-		
+
+		// if TFlip is true then it inverts the motor speeds that will be used
+		// later on
+
 		if (TFlip == true) {
 			v_BackRight = -v_BackRight;
 			v_BackLeft = -v_BackLeft;
 			v_FrontRight = -v_FrontRight;
 			v_FrontLeft = -v_FrontLeft;
 		}
-		
-		/* checks to see if the controls should be inverted for the turning then applies motor 
-		* speed
-		*/
-		
+
+		/*
+		 * checks to see if the controls should be inverted for the turning then
+		 * applies motor speed
+		 */
+
 		if (Math.abs(r) != 0) {
 			if (TFlip == true) {
 				leftFrontDrive.set(-r);
@@ -177,11 +197,13 @@ public class Drive {
 				rightBackDrive.set(r);
 			}
 		}
-		
-		/* translational movement applied here based on the algorithm and TFlip variable 
-		* established earlier only after it has checked for a right stick value
-		*/
-		
+
+		/*
+		 * translational movement applied here based on the algorithm and TFlip
+		 * variable established earlier only after it has checked for a right
+		 * stick value
+		 */
+
 		else {
 			leftFrontDrive.set(v_FrontLeft / f);
 			rightFrontDrive.set(v_FrontRight / f);
@@ -189,8 +211,9 @@ public class Drive {
 			rightBackDrive.set(v_BackRight / f);
 
 		}
-		
-		// prints the motor values to sting 5-8 respectively on the driver station
+
+		// prints the motor values to sting 5-8 respectively on the driver
+		// station
 
 		SmartDashboard.putString("DB/String 5",
 				String.valueOf("Left Front " + Outputs.getInstance().leftFrontDrive.getOutputCurrent()));
@@ -200,14 +223,10 @@ public class Drive {
 				String.valueOf("Left Back " + Outputs.getInstance().leftBackDrive.getOutputCurrent()));
 		SmartDashboard.putString("DB/String 8",
 				String.valueOf("Right Back " + Outputs.getInstance().rightBackDrive.getOutputCurrent()));
-		
+
 	}
 
 	public void testPeriodic() {
-		
-		}
-	}
 
-	
-			
-			
+	}
+}

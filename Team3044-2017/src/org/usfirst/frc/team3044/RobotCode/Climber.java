@@ -14,19 +14,10 @@ import org.usfirst.frc.team3044.Reference.SecondController;
 class Climber {
 	// change to Y??, boolean button
 	SecondController controller = new SecondController();
-	public int winchPower = 1;
-
-	// creates states to use in the cases
-	public enum state {
-		STOPPED, MOVINGUP
-	}
-
-	// climber starts the match stopped
-	state climberState = state.STOPPED;
 
 	// sets up CANTalons
-	public CANTalon winchDrive1 = new CANTalon(1);
-	public CANTalon winchDrive2 = new CANTalon(2);
+	public CANTalon winchDrive1 = new CANTalon(2);
+	public CANTalon winchDrive2 = new CANTalon(3);
 
 	public void climberInit() {
 
@@ -38,45 +29,18 @@ class Climber {
 
 	public void climberTeleopPeriodic() {
 		boolean yButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_Y);
+		boolean aButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_A);
 
-		// checks to see if Y is not pressed
-		if (!yButton) {
-			//if Y is not pressed, the motor does't move
-			winchPower = 0;
+		if(aButton){
+			winchDrive1.set(1);
+			winchDrive2.set(1);
+		}else if(yButton){
+			winchDrive1.set(-1);
+			winchDrive2.set(-1);
+		}else{
+			winchDrive1.set(0);
+			winchDrive2.set(0);
 		}
-
-		switch (climberState) {
-
-		case STOPPED:
-			// displays current state on SmartDashboard
-			SmartDashboard.putString("DB/String 1", "STOPPED");
-
-			// check if y is pressed
-			if (yButton) {
-				//if Y is pressed it moves up
-				climberState = state.MOVINGUP;
-				winchPower = 1;
-			}
-
-			break;
-
-		case MOVINGUP:
-			// displays current state on SmartDashboard
-			SmartDashboard.putString("DB/String 1", "MOVINGUP");
-
-			// if Y isn't pressed it doesn't move
-			if (!yButton) {
-				climberState = state.STOPPED;
-				// both motors stop
-				winchPower = 0;
-
-			}
-
-			break;
-		}
-		//sets 
-		winchDrive1.set(winchPower);
-		winchDrive2.set(winchPower);
 	}
 
 	public void testPeriodic() {

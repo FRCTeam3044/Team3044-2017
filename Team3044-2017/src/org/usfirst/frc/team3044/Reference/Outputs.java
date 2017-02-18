@@ -34,7 +34,7 @@ public class Outputs {
 	public CANTalon agitator;
 	
 	// Gear
-	public CANTalon GearCantalon;
+	public CANTalon GearCANTalon;
 	
 	// Pickup
 	public CANTalon pickUp;
@@ -46,7 +46,7 @@ public class Outputs {
 		rightFrontDrive = new CANTalon(1);//correct
 		rightBackDrive = new CANTalon(0);//correct
 		
-		GearCantalon = new CANTalon(2);
+		GearCANTalon = new CANTalon(2);
 		
 		agitator = new CANTalon(3);
 		
