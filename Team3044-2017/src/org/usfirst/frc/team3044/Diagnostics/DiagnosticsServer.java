@@ -109,35 +109,41 @@ public class DiagnosticsServer extends org.nanohttpd.protocols.http.NanoHTTPD {
 				return (DiagnosticsServerDispatchResponse) r; 
 				
 			} catch (ClassNotFoundException e) {
-				response.Status =  Status.NOT_FOUND; 
-				response.StatusMessage = "Class " + pathSegments[1] + " not found"; 
-				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
+				
+				return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e, 
+						Status.NOT_FOUND, "Class " + pathSegments[1] + " not found");
+				
 			} catch (NoSuchMethodException e) {
-				response.Status=Status.NOT_FOUND; 
-				response.StatusMessage= "Method " + pathSegments[2] + " in " + pathSegments[1] + "  not found";
-				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
+				
+				return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e,
+						Status.NOT_FOUND,"Method " + pathSegments[2] + " in " + pathSegments[1] + "  not found"); 
+				
 			} catch (SecurityException e) {
-				response.Status=Status.FORBIDDEN;
-				response.StatusMessage= "Security exception thrown while processing request";
-				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
+				
+				return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e,
+						Status.FORBIDDEN,"Security exception thrown while processing request");
+				
 			} catch (InstantiationException e) {
-				response.Status=Status.INTERNAL_ERROR;
-				response.StatusMessage= "Instantiation exception";
-				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
+				
+				return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e,
+						Status.INTERNAL_ERROR,"Instantiation exception"); 
+				
 			} catch (IllegalAccessException e) {
-				response.Status=Status.INTERNAL_ERROR; 
-				response.StatusMessage= "Illegal access exception";
-				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
+				
+				return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e,
+						Status.INTERNAL_ERROR, "Illegal access exception"); 
+				
 			} catch (IllegalArgumentException e) {
-				response.Status=Status.BAD_REQUEST;
-				response.StatusMessage= "Illegal argument exception"; 
-				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
+				
+				return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e,
+						Status.BAD_REQUEST, "Illegal argument exception"); 
+				
 			} catch (InvocationTargetException e) {
-				response.Status=Status.INTERNAL_ERROR;
-				response.StatusMessage= "Invocation exception: " + e.getStackTrace().toString();
-				response.ResponseData = DiagnosticsServerDispatchResponse.BuildExceptionResponse(e); 
+				
+				return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e,
+						Status.INTERNAL_ERROR, "Invocation Exception"); 
+				
 			}
-			return response; 
 		}
 		else
 		{
