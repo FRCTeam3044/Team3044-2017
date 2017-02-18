@@ -32,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Server
 {
+	// org.usfirst.frc.team3044.Diagnostics.Server/Cache 
 	public DiagnosticsServerDispatchResponse Cache(Object o,  org.nanohttpd.protocols.http.request.Method method)
 	{
 		
@@ -58,8 +59,11 @@ public class Server
 		return null; 
 	}
 	
+	// org.usfirst.frc.team3044.Diagnostics.Server/Ping 
 	public DiagnosticsServerDispatchResponse Ping(Object o, org.nanohttpd.protocols.http.request.Method method)
 	{
+		if (o==null ) o = new JSONObject(); 
+		
 		JSONObject arg = (JSONObject)o; 
 		
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -101,7 +105,7 @@ public class Server
 		}} 
 		catch (Exception e)
 		{
-			return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e);
+			return DiagnosticsServerDispatchResponse.BuildExceptionResponse(e, Status.INTERNAL_ERROR, e.getMessage());
 			
 		}
 	}
