@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class SecondController {
-	private static SecondController instance = null;
+	public static SecondController instance = null;
 
 	public Joystick secondJoy;
 
@@ -18,7 +18,7 @@ public class SecondController {
 	public static int BUTTON_BACK = 7;
 	public static int BUTTON_START = 8;
 
-	private SecondController() {
+	public SecondController() {
 		secondJoy = new Joystick(1);
 	}
 

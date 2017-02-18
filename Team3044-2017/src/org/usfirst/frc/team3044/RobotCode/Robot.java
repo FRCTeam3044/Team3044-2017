@@ -13,40 +13,40 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team3044.Diagnostics.*;
 
 public class Robot extends IterativeRobot {
-	Drive drive = new Drive();
+	org.usfirst.frc.team3044.RobotCode.Vision vision = new org.usfirst.frc.team3044.RobotCode.Vision();
+
+	Drive drive;
+	Gear gear;
+	Climber climber;
 	FirstController controller;
-	private double Dashboard;
-	org.usfirst.frc.team3044.RobotCode.Vision vision = new org.usfirst.frc.team3044.RobotCode.Vision(); 
-	
-	DiagnosticsServer diagnosticsServer = new DiagnosticsServer(); 
-	
+	public double Dashboard;
+
+	DiagnosticsServer diagnosticsServer = new DiagnosticsServer();
+
 	public void robotInit() {
 		Outputs.getInstance().init();
 		controller.getInstance();
-		drive.driveInit();
-		// Change this 
-		
 	}
 
 	public void autonomousInit() {
 	}
 
-
 	public void autonomousPeriodic() {
-		
+
 	}
 
 	public void teleopInit() {
 		Outputs.getInstance().init();
 		drive.driveInit();
-		
+		gear.gearInit();
+		climber.climberInit();
+
 	}
 
 	public void teleopPeriodic() {
-		
-		Inputs.CommonPeriodic();
 		drive.driveTeleopPeriodic();
-
+		gear.gearTeleopPeriodic();
+		climber.climberTeleopPeriodic();
 	}
 
 	public void disabledInit() {
@@ -58,17 +58,14 @@ public class Robot extends IterativeRobot {
 	public void testInit() {
 		vision.robotInit();
 		vision.autonomousInit();
-		try { 
-		diagnosticsServer.start(0, true);
-		}
-		catch (IOException e)
-		{
-			
+		try {
+			diagnosticsServer.start(0, true);
+		} catch (IOException e) {
+
 		}
 	}
 
 	public void testPeriodic() {
-		Inputs.CommonPeriodic();
 		// Change this
 		vision.autonomousPeriodic();
 	}

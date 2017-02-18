@@ -34,20 +34,26 @@ public class Outputs {
 	public CANTalon agitator;
 	
 	// Gear
-	public CANTalon gearMotor;
+	public CANTalon GearCantalon;
 	
 	// Pickup
 	public CANTalon pickUp;
 
 
 	public void init() {
-		leftFrontDrive = new CANTalon(8);
-		leftBackDrive = new CANTalon(2);
-		rightFrontDrive = new CANTalon(7);
-		rightBackDrive = new CANTalon(9);
+		leftFrontDrive = new CANTalon(4);//correct
+		leftBackDrive = new CANTalon(5);//correct
+		rightFrontDrive = new CANTalon(1);//correct
+		rightBackDrive = new CANTalon(0);//correct
+		
+		GearCantalon = new CANTalon(2);
+		
 		agitator = new CANTalon(3);
+		
 		shooter = new CANTalon(1);
+		
 		pickUp = new CANTalon(4);
+		
 	
 
 	}
