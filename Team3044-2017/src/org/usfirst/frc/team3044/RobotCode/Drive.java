@@ -46,7 +46,7 @@ public class Drive {
 	 */
 
 	public double deadband(double value) {
-		if (Math.abs(value) < .05) {
+		if (Math.abs(value) < .2) {
 			return 0;
 		} else {
 			return value;
