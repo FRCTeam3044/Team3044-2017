@@ -1,13 +1,9 @@
 package org.usfirst.frc.team3044.RobotCode;
 
 import org.usfirst.frc.team3044.Reference.*;
-import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
 import com.ctre.CANTalon;
-import com.ctre.CANTalon.TalonControlMode;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 public class Gear {
 	//We are using CANTalons which controls motors to extend and retract
@@ -16,16 +12,10 @@ public class Gear {
 public CANTalon GearCANTalon;
 
 	//public CANTalon GearCantalon = new CANTalon(2)
-public DigitalInput limitSwitch1 = new DigitalInput(1);
-public DigitalInput limitSwitch2 = new DigitalInput(2);
+public DigitalInput limitSwitch1 = new DigitalInput(4);
+public DigitalInput limitSwitch2 = new DigitalInput(5);
 
 public Outputs out = Outputs.getInstance();
-
-public Gear(){
-	
-	
-	GearCANTalon = out.GearCANTalon;
-}
 
 //Code does not have breaks as I am not sure where to use them
 //As of 2/11/17 CANTalons not solenoids
@@ -39,6 +29,7 @@ public Gear(){
 	public void gearInit() {
 		//called once, when robot starts up. Use limit switches
 		//Motor starts off 
+		GearCANTalon = out.GearCANTalon;
 		GearCANTalon.set(0);
 	}
 
@@ -58,16 +49,19 @@ public Gear(){
 * Trial 1
 * @return
 ***************************************************************************/
-		//B = in or retracting
+		//B = in or retracting 
 		 boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B) ;
-		//X = out or extending
+		//X = out or extending 
 		 boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X) ;
 		 
-		 if(buttonXPressed && !limitSwitch1.get()){
-			 GearCANTalon.set(1);
+		 if(!buttonBPressed && !limitSwitch1.get()){
+			 System.out.println("GEAR IN");
+			 GearCANTalon.set(.5);
 		 }else if(buttonBPressed && !limitSwitch2.get()){
-			 GearCANTalon.set(0);
+			 System.out.println("GEAR OUT");
+			 GearCANTalon.set(-1);
 		 }else{
+			 System.out.println("Nothing");
 			 GearCANTalon.set(0);
 		 }
 		 

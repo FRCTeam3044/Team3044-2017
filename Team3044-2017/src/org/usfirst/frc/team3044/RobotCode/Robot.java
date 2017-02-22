@@ -18,31 +18,24 @@ public class Robot extends IterativeRobot {
 	org.usfirst.frc.team3044.RobotCode.Vision vision = new org.usfirst.frc.team3044.RobotCode.Vision();
 
 	Drive drive = new Drive();
-	Gear gear;
+	Gear gear = new Gear();
 	Climber climber = new Climber();
+	Shooter shooter = new Shooter();
 
 	SmartDashboard smartDashboard = new SmartDashboard();
-
-	DigitalOutput digitalOutput1 = new DigitalOutput(7);
-	DigitalOutput digitalOutput2 = new DigitalOutput(8);
-	DigitalOutput digitalOutput3 = new DigitalOutput(9);
-
-	byte test = 0;
 
 	DiagnosticsServer diagnosticsServer = new DiagnosticsServer();
 
 	public void robotInit() {
 		Outputs.getInstance().init();
-		drive.driveInit();
+		shooter.driveInit();
 	}
 
 	public void autonomousInit() {
-		drive.driveInit();
+		drive.driveAutoInit();
 	}
 
 	public void autonomousPeriodic() {
-		System.out.println("Auto Periodic");
-
 		drive.driveAutoPeriodic();
 
 	}
@@ -51,18 +44,16 @@ public class Robot extends IterativeRobot {
 		Outputs.getInstance().init();
 		drive.driveInit();
 		climber.climberInit();
+		gear.gearInit();
+		shooter.TeleopInit();
 
 	}
 
 	public void teleopPeriodic() {
 		drive.driveTeleopPeriodic();
 		climber.climberTeleopPeriodic();
-
-		test = (byte) Math.floor(smartDashboard.getDouble("DB/Slider 0"));
-
-		digitalOutput1.set((test & 4) == 4);
-		digitalOutput2.set((test & 2) == 2);
-		digitalOutput3.set((test & 1) == 1);
+		gear.gearTeleopPeriodic();
+		shooter.driveTeleopPeriodic();
 
 	}
 

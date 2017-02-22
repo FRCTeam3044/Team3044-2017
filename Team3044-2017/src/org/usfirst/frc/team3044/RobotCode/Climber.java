@@ -16,8 +16,8 @@ class Climber {
 	SecondController controller = new SecondController();
 
 	// sets up CANTalons
-	public CANTalon winchDrive1 = new CANTalon(2);
-	public CANTalon winchDrive2 = new CANTalon(3);
+	public CANTalon winchDrive1 = new CANTalon(6);
+	public CANTalon winchDrive2 = new CANTalon(7);
 
 	public void climberInit() {
 
@@ -28,13 +28,16 @@ class Climber {
 	}
 
 	public void climberTeleopPeriodic() {
+		//Climbs the Robot Up
 		boolean yButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_Y);
+		
+		//Climbs the Robot Down
 		boolean aButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_A);
 
-		if(aButton){
+		if(yButton){
 			winchDrive1.set(1);
 			winchDrive2.set(1);
-		}else if(yButton){
+		}else if(aButton){
 			winchDrive1.set(-1);
 			winchDrive2.set(-1);
 		}else{

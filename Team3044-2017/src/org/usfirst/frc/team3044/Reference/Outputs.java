@@ -46,9 +46,9 @@ public class Outputs {
 		rightFrontDrive = new CANTalon(1);//correct
 		rightBackDrive = new CANTalon(0);//correct
 		
-		GearCANTalon = new CANTalon(2);
+		GearCANTalon = new CANTalon(3);//correct
 		
-		agitator = new CANTalon(3);
+		agitator = new CANTalon(8);
 		
 		shooter = new CANTalon(1);
 		

@@ -11,7 +11,11 @@ package org.usfirst.frc.team3044.RobotCode;
 */
 
 import org.usfirst.frc.team3044.Reference.*;
+import com.kauailabs.navx.frc.*;
 import com.ctre.CANTalon;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,6 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drive {
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	FirstController controller = FirstController.getInstance();
+
+	AHRS ahrs;
 
 	// true false statement activated by the start button to invert the mecanum
 	// drive controls
@@ -31,6 +37,8 @@ public class Drive {
 	public CANTalon leftBackDrive;
 	public CANTalon rightFrontDrive;
 	public CANTalon rightBackDrive;
+
+	int loop = 0;
 
 	Timer time = new Timer();
 
@@ -54,12 +62,22 @@ public class Drive {
 	}
 
 	public void driveInit() {
+		
+		try {
+	          /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
+	          /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
+	          /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
+	          ahrs = new AHRS(I2C.Port.kOnboard); 
+	          ahrs.reset();
+	      } catch (RuntimeException ex ) {
+	          DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
+	      }
+		
 
 		/*
 		 * pulls 4 motors from the output class states (left right front back)
 		 * and sets int variable of i to 0
 		 */
-
 		leftFrontDrive = out.leftFrontDrive;
 		leftBackDrive = out.leftBackDrive;
 		rightFrontDrive = out.rightFrontDrive;
@@ -98,10 +116,10 @@ public class Drive {
 		case 0:
 			System.out.println("I'M CASE 0");
 
-			leftFrontDrive.set(.25);
-			leftBackDrive.set(.25);
-			rightFrontDrive.set(-.25);
-			rightBackDrive.set(-.25);
+			leftFrontDrive.set(-.25);
+			leftBackDrive.set(-.25 * .84);
+			rightFrontDrive.set(.25);
+			rightBackDrive.set(.25);
 
 			time.start();
 			state = 1;
@@ -110,14 +128,14 @@ public class Drive {
 
 		case 1:
 			System.out.println("WAITING");
-			if (time.get() > 10) {
+			if (time.get() > 2) {
 				leftFrontDrive.set(0);
 				leftBackDrive.set(0);
 				rightFrontDrive.set(0);
 				rightBackDrive.set(0);
-				
+
 				System.out.println("AUTO COMPLETE");
-				
+
 				state = 5;
 			}
 			break;
@@ -127,13 +145,25 @@ public class Drive {
 	}
 
 	public void driveTeleopPeriodic() {
+		/*
+		 * This code is supposed to relate to the NavX This is supposed to get
+		 * values from the Gyro on the NavX And print the values to the
+		 * Dashboard
+		 */
+
+		SmartDashboard.putString("DB/String 1", String.valueOf(ahrs.getYaw()));
+		  SmartDashboard.putString("DB/String 2", String.valueOf(ahrs.getDisplacementX()));
+		  SmartDashboard.putString("DB/String 3", String.valueOf(ahrs.getAngle()));
+		
+		
+		
 
 		/*
 		 * establishes x as the value of the x axis on the left stick, y as the
 		 * value of the y axis for the left stick and r as the x value of the
 		 * right stick
 		 */
-		double x = -deadband(controller.getLeftX()); // x direction
+		double x = (-deadband(controller.getLeftX())); // x direction
 		double y = deadband(controller.getLeftY()); // y direction
 		double r = deadband(controller.getRightX()); // rotation
 
@@ -183,46 +213,31 @@ public class Drive {
 		 * checks to see if the controls should be inverted for the turning then
 		 * applies motor speed
 		 */
-
-		if (Math.abs(r) != 0) {
-			if (TFlip == true) {
-				leftFrontDrive.set(-r);
-				leftBackDrive.set(-r);
-				rightFrontDrive.set(-r);
-				rightBackDrive.set(-r);
-			} else {
-				leftFrontDrive.set(r);
-				leftBackDrive.set(r);
-				rightFrontDrive.set(r);
-				rightBackDrive.set(r);
-			}
-		}
-
+		/*
+		 * if (Math.abs(r) != 0) { if (TFlip == true) { leftFrontDrive.set(-r);
+		 * leftBackDrive.set(-r); rightFrontDrive.set(-r);
+		 * rightBackDrive.set(-r); } else { leftFrontDrive.set(r);
+		 * leftBackDrive.set(r); rightFrontDrive.set(r); rightBackDrive.set(r);
+		 * } }
+		 */
 		/*
 		 * translational movement applied here based on the algorithm and TFlip
 		 * variable established earlier only after it has checked for a right
 		 * stick value
 		 */
 
-		else {
-			leftFrontDrive.set(v_FrontLeft / f);
-			rightFrontDrive.set(v_FrontRight / f);
-			leftBackDrive.set(v_BackLeft / f);
-			rightBackDrive.set(v_BackRight / f);
-
-		}
+		leftFrontDrive.set((v_FrontLeft / f));
+		rightFrontDrive.set((v_FrontRight / f));
+		leftBackDrive.set((v_BackLeft / f));
+		rightBackDrive.set((v_BackRight / f));
 
 		// prints the motor values to sting 5-8 respectively on the driver
 		// station
 
-		SmartDashboard.putString("DB/String 5",
-				String.valueOf("Left Front " + Outputs.getInstance().leftFrontDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 6",
-				String.valueOf("Right Front " + Outputs.getInstance().rightFrontDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 7",
-				String.valueOf("Left Back " + Outputs.getInstance().leftBackDrive.getOutputCurrent()));
-		SmartDashboard.putString("DB/String 8",
-				String.valueOf("Right Back " + Outputs.getInstance().rightBackDrive.getOutputCurrent()));
+		SmartDashboard.putNumber("1", Outputs.getInstance().leftFrontDrive.getOutputCurrent());
+		SmartDashboard.putNumber("2", Outputs.getInstance().rightFrontDrive.getOutputCurrent());
+		SmartDashboard.putNumber("3", Outputs.getInstance().leftBackDrive.getOutputCurrent());
+		SmartDashboard.putNumber("4", Outputs.getInstance().rightBackDrive.getOutputCurrent());
 
 	}
 
