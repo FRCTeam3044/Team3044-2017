@@ -11,17 +11,19 @@ import org.usfirst.frc.team3044.Reference.SecondController;
 import org.usfirst.frc.team3044.Reference.Outputs;
 
 public class Pickup {
-	
-	//defines controller
-	
+
+	// defines controller
+
 	SecondController controller = new SecondController();
-	
-	//defines CANTalon
-	
+
+	public Outputs out = Outputs.getInstance();
+
+	// defines CANTalon
+
 	public CANTalon pickUp;
 
-	//A deadband sets the tolerance of the joystick
-	//Change if necessary
+	// A deadband sets the tolerance of the joystick
+	// Change if necessary
 	public double deadband(double value) {
 		if (Math.abs(value) < .15) {
 			return 0;
@@ -29,27 +31,27 @@ public class Pickup {
 			return value;
 		}
 	}
-	
+
+	public void pickupInit() {
+
+		/*
+		 * Sets the CANTalon being used in this code to the CANTalon that is
+		 * defined in the code "Outputs.java"
+		 */
+
+		pickUp = out.pickUp;
+	}
+
 	public void pickupAutoInit() {
 	}
 
 	public void pickupAutoPeriodic() {
 	}
 
-	public void pickupInit() {
-		
-		/*Sets the CANTalon being used in this code to the CANTalon that is defined
-		 * in the code "Outputs.java"
-		 */
-		
-		pickUp = new CANTalon (2);
-	}
-	
-	//TeleOp phase
+	// TeleOp phase
 	public void pickupTeleopPeriodic() {
 
-	
-				pickUp.set(deadband(controller.getLeftY()));
+		pickUp.set(deadband(controller.getLeftY()));
 	}
 
 	public void testInit() {
@@ -58,4 +60,3 @@ public class Pickup {
 	public void testPeriodic() {
 	}
 }
-

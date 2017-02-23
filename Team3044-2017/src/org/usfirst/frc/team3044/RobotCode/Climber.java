@@ -8,6 +8,8 @@ package org.usfirst.frc.team3044.RobotCode;
 
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import org.usfirst.frc.team3044.Reference.Outputs;
 import org.usfirst.frc.team3044.Reference.SecondController;
 
 //both move in the same direction, 2 motors
@@ -15,32 +17,38 @@ class Climber {
 	// change to Y??, boolean button
 	SecondController controller = new SecondController();
 
+	public Outputs out = Outputs.getInstance();
+
 	// sets up CANTalons
-	public CANTalon winchDrive1 = new CANTalon(6);
-	public CANTalon winchDrive2 = new CANTalon(7);
+	public CANTalon winchDrive1;
+	public CANTalon winchDrive2;
 
 	public void climberInit() {
-
+		winchDrive1 = out.winchDrive1;
+		winchDrive2 = out.winchDrive2;
+	}
+	
+	public void climberAutoInit(){
+		
 	}
 
-	public void climberAutPeriodic() {
-
+	public void climberAutoPeriodic() {
 	}
 
 	public void climberTeleopPeriodic() {
-		//Climbs the Robot Up
+		// Climbs the Robot Up
 		boolean yButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_Y);
-		
-		//Climbs the Robot Down
+
+		// Climbs the Robot Down
 		boolean aButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_A);
 
-		if(yButton){
+		if (yButton) {
 			winchDrive1.set(1);
 			winchDrive2.set(1);
-		}else if(aButton){
+		} else if (aButton) {
 			winchDrive1.set(-1);
 			winchDrive2.set(-1);
-		}else{
+		} else {
 			winchDrive1.set(0);
 			winchDrive2.set(0);
 		}

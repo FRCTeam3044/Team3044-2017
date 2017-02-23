@@ -4,21 +4,25 @@ import org.usfirst.frc.team3044.Reference.*;
 import edu.wpi.first.wpilibj.DigitalInput;
 import com.ctre.CANTalon;
 
-
 public class Gear {
-	//We are using CANTalons which controls motors to extend and retract
-	//start closed
-	//port number might change as Cassie is using 1 & 2 such as 3 & 4 
-public CANTalon GearCANTalon;
+	// We are using CANTalons which controls motors to extend and retract
+	// start closed
+	// port number might change as Cassie is using 1 & 2 such as 3 & 4
+	public CANTalon GearCANTalon;
 
-	//public CANTalon GearCantalon = new CANTalon(2)
-public DigitalInput limitSwitch1 = new DigitalInput(4);
-public DigitalInput limitSwitch2 = new DigitalInput(5);
+	// public CANTalon GearCantalon = new CANTalon(2)
+	public DigitalInput limitSwitch1 = new DigitalInput(4);
+	public DigitalInput limitSwitch2 = new DigitalInput(5);
 
-public Outputs out = Outputs.getInstance();
+	public Outputs out = Outputs.getInstance();
 
-//Code does not have breaks as I am not sure where to use them
-//As of 2/11/17 CANTalons not solenoids
+	// Code does not have breaks as I am not sure where to use them
+	// As of 2/11/17 CANTalons not solenoids
+	public void gearInit() {
+		// called once, when robot starts up. Use limit switches
+		// Motor starts off
+		GearCANTalon = out.GearCANTalon;
+	}
 
 	public void gearAutoInit() {
 	}
@@ -26,49 +30,43 @@ public Outputs out = Outputs.getInstance();
 	public void gearAutoPeriodic() {
 	}
 
-	public void gearInit() {
-		//called once, when robot starts up. Use limit switches
-		//Motor starts off 
-		GearCANTalon = out.GearCANTalon;
-		GearCANTalon.set(0);
-	}
-
-/****************************************************************************
-* TeleopPeriod Goal: Use X button to drive motors forward & B button to drive 
-* motors backwards 
-* Start fully retracted, X = extending until fully extended unless B button is 
-* pressed = retracting until fully retracted or X button is pushed once more
-* If I button mash X and then B back and forth,
-* should be retracting and extending like it's spazzing
-* @return
-***************************************************************************/
+	/****************************************************************************
+	 * TeleopPeriod Goal: Use X button to drive motors forward & B button to
+	 * drive motors backwards Start fully retracted, X = extending until fully
+	 * extended unless B button is pressed = retracting until fully retracted or
+	 * X button is pushed once more If I button mash X and then B back and
+	 * forth, should be retracting and extending like it's spazzing
+	 * 
+	 * @return
+	 ***************************************************************************/
 	public void gearTeleopPeriodic() {
 
-/****************************************************************************
-* 3 if statement to satisfy the gear Mechanism. Does not use states
-* Trial 1
-* @return
-***************************************************************************/
-		//B = in or retracting 
-		 boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B) ;
-		//X = out or extending 
-		 boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X) ;
-		 
-		 if(!buttonBPressed && !limitSwitch1.get()){
-			 System.out.println("GEAR IN");
-			 GearCANTalon.set(.5);
-		 }else if(buttonBPressed && !limitSwitch2.get()){
-			 System.out.println("GEAR OUT");
-			 GearCANTalon.set(-1);
-		 }else{
-			 System.out.println("Nothing");
-			 GearCANTalon.set(0);
-		 }
-		 
-}
+		/****************************************************************************
+		 * 3 if statement to satisfy the gear Mechanism. Does not use states
+		 * Trial 1
+		 * 
+		 * @return
+		 ***************************************************************************/
+		// B = in or retracting
+		boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
+		// X = out or extending
+		boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
+
+		if (!buttonBPressed && !limitSwitch1.get()) {
+			System.out.println("GEAR IN");
+			GearCANTalon.set(.5);
+		} else if (buttonBPressed && !limitSwitch2.get()) {
+			System.out.println("GEAR OUT");
+			GearCANTalon.set(-1);
+		} else {
+			System.out.println("Nothing");
+			GearCANTalon.set(0);
+		}
+
+	}
 
 	public void testInit() {
-		
+
 	}
 
 	public void testPeriodic() {

@@ -21,6 +21,7 @@ public class Robot extends IterativeRobot {
 	Gear gear = new Gear();
 	Climber climber = new Climber();
 	Shooter shooter = new Shooter();
+	Pickup pickup = new Pickup();
 
 	SmartDashboard smartDashboard = new SmartDashboard();
 
@@ -28,7 +29,6 @@ public class Robot extends IterativeRobot {
 
 	public void robotInit() {
 		Outputs.getInstance().init();
-		shooter.driveInit();
 	}
 
 	public void autonomousInit() {
@@ -45,15 +45,16 @@ public class Robot extends IterativeRobot {
 		drive.driveInit();
 		climber.climberInit();
 		gear.gearInit();
-		shooter.TeleopInit();
-
+		shooter.shooterInit();
+		pickup.pickupInit();
 	}
 
 	public void teleopPeriodic() {
 		drive.driveTeleopPeriodic();
 		climber.climberTeleopPeriodic();
 		gear.gearTeleopPeriodic();
-		shooter.driveTeleopPeriodic();
+		shooter.shooterTeleopPeriodic();
+		pickup.pickupTeleopPeriodic();
 
 	}
 

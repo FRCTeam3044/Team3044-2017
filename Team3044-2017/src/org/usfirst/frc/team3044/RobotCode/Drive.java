@@ -62,17 +62,23 @@ public class Drive {
 	}
 
 	public void driveInit() {
-		
+
 		try {
-	          /* Communicate w/navX-MXP via the MXP SPI Bus.                                     */
-	          /* Alternatively:  I2C.Port.kMXP, SerialPort.Port.kMXP or SerialPort.Port.kUSB     */
-	          /* See http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/ for details. */
-	          ahrs = new AHRS(I2C.Port.kOnboard); 
-	          ahrs.reset();
-	      } catch (RuntimeException ex ) {
-	          DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
-	      }
-		
+			/* Communicate w/navX-MXP via the MXP SPI Bus. */
+			/*
+			 * Alternatively: I2C.Port.kMXP, SerialPort.Port.kMXP or
+			 * SerialPort.Port.kUSB
+			 */
+			/*
+			 * See
+			 * http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/
+			 * for details.
+			 */
+			ahrs = new AHRS(I2C.Port.kOnboard);
+			ahrs.reset();
+		} catch (RuntimeException ex) {
+			DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
+		}
 
 		/*
 		 * pulls 4 motors from the output class states (left right front back)
@@ -152,11 +158,8 @@ public class Drive {
 		 */
 
 		SmartDashboard.putString("DB/String 1", String.valueOf(ahrs.getYaw()));
-		  SmartDashboard.putString("DB/String 2", String.valueOf(ahrs.getDisplacementX()));
-		  SmartDashboard.putString("DB/String 3", String.valueOf(ahrs.getAngle()));
-		
-		
-		
+		SmartDashboard.putString("DB/String 2", String.valueOf(ahrs.getDisplacementX()));
+		SmartDashboard.putString("DB/String 3", String.valueOf(ahrs.getAngle()));
 
 		/*
 		 * establishes x as the value of the x axis on the left stick, y as the
@@ -238,6 +241,10 @@ public class Drive {
 		SmartDashboard.putNumber("2", Outputs.getInstance().rightFrontDrive.getOutputCurrent());
 		SmartDashboard.putNumber("3", Outputs.getInstance().leftBackDrive.getOutputCurrent());
 		SmartDashboard.putNumber("4", Outputs.getInstance().rightBackDrive.getOutputCurrent());
+
+	}
+
+	public void testInit() {
 
 	}
 
