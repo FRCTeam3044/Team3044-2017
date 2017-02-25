@@ -3,15 +3,12 @@ package org.usfirst.frc.team3044.RobotCode;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.HashMap;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.vision.VisionPipeline;
 
 import org.opencv.core.*;
@@ -46,11 +43,10 @@ public class GripPipeline implements VisionPipeline {
 	 */
 	@Override	public void process(Mat source0) {
 		// Step HSL_Threshold0:
-		
 		Mat hslThresholdInput = source0;
-		double[] hslThresholdHue = {61.510791366906474, 132.38907849829351};
-		double[] hslThresholdSaturation = {204.09172661870502, 255.0};
-		double[] hslThresholdLuminance = {105.48561151079136, 163.61774744027304};
+		double[] hslThresholdHue = {60.63012811008223, 160.27120487977317};
+		double[] hslThresholdSaturation = {31.210370686501623, 255.0};
+		double[] hslThresholdLuminance = {197.4625837408946, 255.0};
 		hslThreshold(hslThresholdInput, hslThresholdHue, hslThresholdSaturation, hslThresholdLuminance, hslThresholdOutput);
 
 		// Step CV_dilate0:
@@ -66,7 +62,7 @@ public class GripPipeline implements VisionPipeline {
 		Mat cvErodeSrc = cvDilateOutput;
 		Mat cvErodeKernel = new Mat();
 		Point cvErodeAnchor = new Point(-1, -1);
-		double cvErodeIterations = 3.0;
+		double cvErodeIterations = 2.0;
 		int cvErodeBordertype = Core.BORDER_CONSTANT;
 		Scalar cvErodeBordervalue = new Scalar(-1);
 		cvErode(cvErodeSrc, cvErodeKernel, cvErodeAnchor, cvErodeIterations, cvErodeBordertype, cvErodeBordervalue, cvErodeOutput);
@@ -78,10 +74,10 @@ public class GripPipeline implements VisionPipeline {
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
-		double filterContoursMinArea = 130.0;
+		double filterContoursMinArea = 20.0;
 		double filterContoursMinPerimeter = 20.0;
-		double filterContoursMinWidth = 5.0;
-		double filterContoursMaxWidth = 100.0;
+		double filterContoursMinWidth = 0.0;
+		double filterContoursMaxWidth = 50.0;
 		double filterContoursMinHeight = 0.0;
 		double filterContoursMaxHeight = 1000.0;
 		double[] filterContoursSolidity = {0, 100};

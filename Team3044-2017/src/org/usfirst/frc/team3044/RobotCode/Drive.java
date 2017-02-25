@@ -38,12 +38,6 @@ public class Drive {
 	public CANTalon rightFrontDrive;
 	public CANTalon rightBackDrive;
 
-	int loop = 0;
-
-	Timer time = new Timer();
-
-	int state = 0;
-
 	double dashData = SmartDashboard.getNumber("DB/Slider 0", 0.0);
 
 	public Outputs out = Outputs.getInstance();
@@ -115,39 +109,7 @@ public class Drive {
 
 	}
 
-	public void driveAutoPeriodic() {
-
-		// TEST AUTO CODE
-		switch (state) {
-		case 0:
-			System.out.println("I'M CASE 0");
-
-			leftFrontDrive.set(-.25);
-			leftBackDrive.set(-.25 * .84);
-			rightFrontDrive.set(.25);
-			rightBackDrive.set(.25);
-
-			time.start();
-			state = 1;
-
-			break;
-
-		case 1:
-			System.out.println("WAITING");
-			if (time.get() > 2) {
-				leftFrontDrive.set(0);
-				leftBackDrive.set(0);
-				rightFrontDrive.set(0);
-				rightBackDrive.set(0);
-
-				System.out.println("AUTO COMPLETE");
-
-				state = 5;
-			}
-			break;
-
-		}
-
+	public void driveAutoPeriodic(){
 	}
 
 	public void driveTeleopPeriodic() {
