@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class VisionProcessingThread extends Thread {
 
 	static AxisCamera FrontCamera;
-	static UsbCamera ClimberCamera;
+	//static UsbCamera ClimberCamera;
 	// static UsbCamera ClimberCamera;
 	static GripPipeline pipeline = new GripPipeline();
 
@@ -29,24 +29,23 @@ public class VisionProcessingThread extends Thread {
 	public int rect2_width;
 	public double rect1_area;
 	public double rect2_area;
-	double area_difference;
-	public double rect1_centerx;
-	public double rect1_centery;
-	public double rect2_centerx;
-	public double rect2_centery;
-	double center_of_board;
+	double areaDifference;
+	/*
+	 * public double rect1_centerx;
+	 * public double rect1_centery;
+	 * public double rect2_centerx;
+	 * public double rect2_centery;
+	 */
+	double centerOfBoard;
 	public int n_rectangles;
 
 	// UsbCamera usbCamera = new UsbCamera("ClimberCamera", 0);
 
 	public VisionProcessingThread(AxisCamera frontCamera) {
 		FrontCamera = frontCamera;
-		
-		
+
 	}
 
-	
-	
 	/*
 	 * public VisionProcessingThread(UsbCamera climberCamera) {
 	 * ClimberCamera = climberCamera;
@@ -65,7 +64,6 @@ public class VisionProcessingThread extends Thread {
 			try {
 				// CameraServer.getInstance().startAutomaticCapture(ClimberCamera);
 				CameraServer.getInstance().getVideo(FrontCamera).grabFrame(image);
-			
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -101,18 +99,20 @@ public class VisionProcessingThread extends Thread {
 						n_rectangles = rectangles.length;
 						rect1_width = rectangles[0].width;
 						rect2_width = rectangles[1].width;
-						rect1_centerx = rect1_x + (rectangles[0].width / 2);
-						rect1_centery = rect1_y + (rectangles[0].height / 2);
-						rect2_centerx = rect2_x + (rectangles[1].width / 2);
-						rect2_centery = rect2_y + (rectangles[1].height / 2);
-						area_difference = (rect1_area - rect2_area);
+						/*
+						 * rect1_centerx = rect1_x + (rectangles[0].width / 2);
+						 * rect1_centery = rect1_y + (rectangles[0].height / 2);
+						 * rect2_centerx = rect2_x + (rectangles[1].width / 2);
+						 * rect2_centery = rect2_y + (rectangles[1].height / 2);
+						 */
+						areaDifference = (rect1_area - rect2_area);
 
 						// Makes sure that the rectangle on the left is ALWAYS rectangle 1
 						boolean r1 = (rect1_x < rect2_x);
 						if (r1) {
-							center_of_board = (rect1_x + rect2_x + rect2_width) / 2;
+							centerOfBoard = (rect1_x + rect2_x + rect2_width) / 2;
 						} else {
-							center_of_board = (rect2_x + rect1_x + rect1_width) / 2;
+							centerOfBoard = (rect2_x + rect1_x + rect1_width) / 2;
 						}
 
 					}
