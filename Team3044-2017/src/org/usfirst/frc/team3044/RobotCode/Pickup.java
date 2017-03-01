@@ -5,7 +5,6 @@
 */
 package org.usfirst.frc.team3044.RobotCode;
 
-import org.usfirst.frc.team3044.Reference.*;
 import com.ctre.CANTalon;
 import org.usfirst.frc.team3044.Reference.SecondController;
 import org.usfirst.frc.team3044.Reference.Outputs;
@@ -51,7 +50,7 @@ public class Pickup {
 	// TeleOp phase
 	public void pickupTeleopPeriodic() {
 
-		pickUp.set(deadband(controller.getLeftY()));
+		pickUp.set(deadband(-controller.getLeftY()));
 	}
 
 	public void testInit() {

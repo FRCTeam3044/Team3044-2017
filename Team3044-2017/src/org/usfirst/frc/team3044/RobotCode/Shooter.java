@@ -10,8 +10,9 @@ package org.usfirst.frc.team3044.RobotCode;
 // specialized functions in the code.
 import org.usfirst.frc.team3044.Reference.*;
 import com.ctre.CANTalon;
-import edu.wpi.first.wpilibj.Counter;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -20,20 +21,20 @@ import java.io.IOException;
 // creates the shooter function
 public class Shooter {
 
+	public Outputs out = Outputs.getInstance();
+
 	// declares outputs for talon controlled motors associated w/shooter
 	public CANTalon shooter;
 	public CANTalon shooter2;
 	public CANTalon impeller;
-	Counter shooterTacho = new Counter(5);
-
-	public Outputs out = Outputs.getInstance();
+	DummyTacho shooterTacho = out.shooterTachoCounter;
 
 	SecondController secondCon = new SecondController();
 
 	// sets the RPM variables for tachometer
-	int currentRPM = 0;
-	final int shootingRPM = 2700;
-	double period = shooterTacho.getPeriod();
+	double currentRPM = 0;
+	final int shootingRPM = 50;
+	// double period = shooterTacho.getPeriod();
 
 	// sets powers for the powered objects
 	public double shootPower = .6;
@@ -86,21 +87,51 @@ public class Shooter {
 	// creates what the robot does in teleop
 	public void shooterTeleopPeriodic() {
 
-		// checks for required safe mode
-		resistanceCurr = shooter.getOutputVoltage() / shooter.getOutputCurrent();
-		if (resistanceCurr <= resistanceThres)
-			okayFlag = false;
+		SmartDashboard.putString("DB/String 8", String.valueOf(shooterTacho.getRate()));
+		currentRPM = shooterTacho.getRate();
 
+		if (secondCon.getRawButton(secondCon.BUTTON_BACK)) {
+			shooter.set(shootPower);
+			shooter2.set(shootPower);
+		} else {
+			shooter.set(0);
+			shooter2.set(0);
+		}
+
+		if (secondCon.getRawButton(secondCon.BUTTON_START)) {
+			impeller.set(.6);
+		} else {
+			impeller.set(0);
+		}
+
+		/*
+		 * Conditional Statement For Adding 10% and Subtracting 10% To Each
+		 * Shooter Motor
+		 */
+
+		if (secondCon.getRawButton(secondCon.BUTTON_LB)) {
+			shootPower += .01;
+		} else if (secondCon.getRawButton(secondCon.BUTTON_RB)) {
+			shootPower -= .01;
+		}
+
+		// checks for required safe mode
+		/*
+		 * resistanceCurr = shooter.getOutputVoltage() /
+		 * shooter.getOutputCurrent(); if (resistanceCurr <= resistanceThres)
+		 * okayFlag = false;
+		 */
+		okayFlag = true;
 		// sets RPMs read as to not have them change mid-read
-		if (period != 0)
-			currentRPM = (int) (60 / period);
+		// if (period != 0)
+		// currentRPM = (int) (60 / period);
 
 		// checks for the shooter being okay
 		if (okayFlag) {
 
 			// makes it so when right bumper is hit, it changes the shooter
 			// from on to off
-			if (secondCon.getRawButton(SecondController.BUTTON_RB)) {
+			if (secondCon.getTriggerLeft()) {
 				shooterOn = !shooterOn;
 			}
 			shooterStart(shooterOn);
@@ -113,11 +144,11 @@ public class Shooter {
 		}
 
 		// writes a file
-		try {
-			fw.write(time.get() + ", " + currentRPM + ", " + resistanceCurr + "\n");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		/*
+		 * try { fw.write(time.get() + ", " + currentRPM + ", " + resistanceCurr
+		 * + "\n"); } catch (IOException e) { e.printStackTrace(); }
+		 */
+
 	}
 
 	// the function that runs when test is initiated
@@ -177,7 +208,7 @@ public class Shooter {
 		// trigger to be activated and then starts the impeller,
 		// if not, all shuts off
 		if (impellerOn && canShoot) {
-			impeller.set(.2);
+			impeller.set(.6);
 		} else {
 			impeller.set(0);
 		}
