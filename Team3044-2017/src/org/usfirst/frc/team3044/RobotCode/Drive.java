@@ -44,7 +44,7 @@ public class Drive {
 	// establishes controller deadbands for the two sticks along with the math
 	// to be used for the following code
 	public double deadband(double value) {
-		if (Math.abs(value) < .1) {
+		if (Math.abs(value) < .15) {
 			return 0;
 		} else {
 			return value;
@@ -61,6 +61,7 @@ public class Drive {
 		rightBackDrive = comp.rightBackDrive;
 		// sets the drive motors at the begining of the code so it is stopped
 		leftFrontDrive.set(0);
+		
 		leftBackDrive.set(0);
 		rightFrontDrive.set(0);
 		rightBackDrive.set(0);
