@@ -7,7 +7,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import org.usfirst.frc.team3044.Reference.*;
 import com.ctre.CANTalon;
+import com.kauailabs.navx.frc.AHRS;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.Servo;
@@ -17,7 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drive {
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	// states buttons and joystick
-	private Joystick firstJoy; 
+	private Joystick firstJoy;
 	public static int BUTTON_START = 8;
 	public static int BUTTON_A = 1;
 	public static int BUTTON_B = 2;
@@ -27,6 +30,9 @@ public class Drive {
 	double rightAutoSpeed;
 	double leftDriveSpeed;
 	double rightDriveSpeed;
+
+	// OBJECT FOR NAVX
+	AHRS ahrs;
 
 	boolean TFlip = false;
 	// establishes the 4 motors for drive wheels
@@ -61,7 +67,7 @@ public class Drive {
 		rightBackDrive = comp.rightBackDrive;
 		// sets the drive motors at the begining of the code so it is stopped
 		leftFrontDrive.set(0);
-		
+
 		leftBackDrive.set(0);
 		rightFrontDrive.set(0);
 		rightBackDrive.set(0);
@@ -79,6 +85,27 @@ public class Drive {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		/*
+		 * NAVX CODE FOR DRIVING TESTING
+		 */
+		try {
+			/* Communicate w/navX-MXP via the MXP SPI Bus. */
+			/*
+			 * Alternatively: I2C.Port.kMXP, SerialPort.Port.kMXP or
+			 * SerialPort.Port.kUSB
+			 */
+			/*
+			 * See
+			 * http://navx-mxp.kauailabs.com/guidance/selecting-an-interface/
+			 * for details.
+			 */
+			ahrs = new AHRS(I2C.Port.kOnboard);
+			ahrs.reset();
+		} catch (RuntimeException ex) {
+			DriverStation.reportError("Error instantiating navX-MXP:  " + ex.getMessage(), true);
+		}
+
 	}
 
 	public void driveAutoPeriodic() {
@@ -87,6 +114,10 @@ public class Drive {
 	}
 
 	public void driveTeleopPeriodic() {
+		// CODE FOR NAVX
+		SmartDashboard.putString("DB/String 1", String.valueOf(ahrs.getYaw()));
+		SmartDashboard.putString("DB/String 2", String.valueOf(ahrs.getDisplacementY()));
+		SmartDashboard.putString("DB/String 3", String.valueOf(ahrs.getAngle()));
 
 		// establishes x as the value of the x axis on the left stick, y as the
 		// value of the y axis for the left stick and r as the x value of the
@@ -122,84 +153,82 @@ public class Drive {
 		if (r != 0) {
 
 			// test if TFlip is true or false, if false then use default turning
-			if (x == 0 && y == 0){
-				
-				if(r > 0 ){
-				
+			if (x == 0 && y == 0) {
+
+				if (r > 0) {
+
 					leftFrontDrive.set(r);
 					leftBackDrive.set(r);
 					rightFrontDrive.set(-r);
 					rightBackDrive.set(-r);
-					
+
 				}
-				if(r < 0 ){
-				
+				if (r < 0) {
+
 					leftFrontDrive.set(-r);
 					leftBackDrive.set(-r);
 					rightFrontDrive.set(r);
 					rightBackDrive.set(r);
-					
+
 				}
-				
-			}	
-				
+
 			}
-		else if (TFlip == false) {
 
-				// if r is greater than 0 then double the power of the left
-				// motors and half the
-				// power of the right motors
+		} else if (TFlip == false) {
 
-				if (r > 0) {
-					leftFrontDrive.set((v_FrontLeft / f) * 2);
-					rightFrontDrive.set((v_FrontRight / f) / 2);
-					leftBackDrive.set((v_BackLeft / f) * 2);
-					rightBackDrive.set((v_BackRight / f) / 2);
-				}
+			// if r is greater than 0 then double the power of the left
+			// motors and half the
+			// power of the right motors
 
-				// if r is less than 0 then double the power of the right motors
-				// and half
-				// the power of the left motors
-
-				else {
-					leftFrontDrive.set((v_FrontLeft / f) / 2);
-					rightFrontDrive.set((v_FrontRight / f) * 2);
-					leftBackDrive.set((v_BackLeft / f) / 2);
-					rightBackDrive.set((v_BackRight / f) * 2);
-				}
+			if (r > 0) {
+				leftFrontDrive.set((v_FrontLeft / f) * 2);
+				rightFrontDrive.set((v_FrontRight / f) / 2);
+				leftBackDrive.set((v_BackLeft / f) * 2);
+				rightBackDrive.set((v_BackRight / f) / 2);
 			}
-				// if TFlip is true, invert the turning
 
-			if (TFlip == true) {
-				
-				// if r is greater than 0 then double the power of the right
-				// motors and half the power of the left motors
+			// if r is less than 0 then double the power of the right motors
+			// and half
+			// the power of the left motors
 
-				if (r > 0) {
-					leftFrontDrive.set(((v_FrontLeft / f) / 2)*.9);
-					rightFrontDrive.set(((v_FrontRight / f) * 2)*.9);
-					leftBackDrive.set(((v_BackLeft / f) / 2)*.9);
-					rightBackDrive.set(((v_BackRight / f) * 2)*.9);
-				}
-				// if r is less than 0 then double the power of the left
-				// motors and half the power of the right motors
-					else {
-					leftFrontDrive.set(((v_FrontLeft / f) * 2)*.9);
-					rightFrontDrive.set(((v_FrontRight / f) / 2)*.9);
-					leftBackDrive.set(((v_BackLeft / f) * 2)*.9);
-					rightBackDrive.set(((v_BackRight / f) / 2)*.9);
-			
-				}			
+			else {
+				leftFrontDrive.set((v_FrontLeft / f) / 2);
+				rightFrontDrive.set((v_FrontRight / f) * 2);
+				leftBackDrive.set((v_BackLeft / f) / 2);
+				rightBackDrive.set((v_BackRight / f) * 2);
 			}
-			
-		//if the r value is 0 then apply the basic algorythm to the wheels
-			
-		else 
-		{
-			leftFrontDrive.set((v_FrontLeft / f)*.9);
-			rightFrontDrive.set((v_FrontRight / f)*.9);
-			leftBackDrive.set((v_BackLeft / f)*.9);
-			rightBackDrive.set((v_BackRight / f)*.9);
+		}
+		// if TFlip is true, invert the turning
+
+		if (TFlip == true) {
+
+			// if r is greater than 0 then double the power of the right
+			// motors and half the power of the left motors
+
+			if (r > 0) {
+				leftFrontDrive.set(((v_FrontLeft / f) / 2) * .9);
+				rightFrontDrive.set(((v_FrontRight / f) * 2) * .9);
+				leftBackDrive.set(((v_BackLeft / f) / 2) * .9);
+				rightBackDrive.set(((v_BackRight / f) * 2) * .9);
+			}
+			// if r is less than 0 then double the power of the left
+			// motors and half the power of the right motors
+			else {
+				leftFrontDrive.set(((v_FrontLeft / f) * 2) * .9);
+				rightFrontDrive.set(((v_FrontRight / f) / 2) * .9);
+				leftBackDrive.set(((v_BackLeft / f) * 2) * .9);
+				rightBackDrive.set(((v_BackRight / f) / 2) * .9);
+
+			}
+		}
+
+		// if the r value is 0 then apply the basic algorythm to the wheels
+
+		else {
+			leftFrontDrive.set((v_FrontLeft / f) * .9);
+			rightFrontDrive.set((v_FrontRight / f) * .9);
+			leftBackDrive.set((v_BackLeft / f) * .9);
+			rightBackDrive.set((v_BackRight / f) * .9);
 		}
 	}
 
@@ -213,6 +242,5 @@ public class Drive {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}}
-
-
+	}
+}

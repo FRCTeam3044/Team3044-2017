@@ -11,8 +11,8 @@ public class Gear {
 	public CANTalon GearCANTalon;
 
 	// public CANTalon GearCantalon = new CANTalon(2)
-	public DigitalInput limitSwitchOut = new DigitalInput(1);
-	public DigitalInput limitSwitchIn = new DigitalInput(0);
+	public DigitalInput limitSwitchOut = new DigitalInput(5);
+	public DigitalInput limitSwitchIn = new DigitalInput(4);
 
 	public Outputs out = Outputs.getInstance();
 
@@ -49,17 +49,12 @@ public class Gear {
 		 ***************************************************************************/
 		// B = in or retracting
 		boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
-		// X = out or extending
-		boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
 
 		if (!buttonBPressed && limitSwitchIn.get()) {
-			System.out.println("GEAR IN");
 			GearCANTalon.set(.5);
 		} else if (buttonBPressed && limitSwitchOut.get()) {
-			System.out.println("GEAR OUT");
 			GearCANTalon.set(-1);
 		} else {
-			System.out.println("Nothing");
 			GearCANTalon.set(0);
 		}
 

@@ -35,7 +35,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void autonomousInit() {
-		drive.driveAutoInit();
 	}
 
 	/*
