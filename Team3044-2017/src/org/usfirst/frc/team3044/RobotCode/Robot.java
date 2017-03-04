@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
 	 * For 3 Seconds Then Stop; The Robot Will Then Drive Forward For Three
 	 * Seconds;
 	 */
-	public void shootAndCross() {
+/*	public void shootAndCross() {
 		int shootAndCross = 0;
 
 		switch (shootAndCross) {
@@ -115,7 +115,7 @@ public class Robot extends IterativeRobot {
 			break;
 		}
 	}
-
+*/
 	/*
 	 * This Is The Second Auto Code; This Code Uses Time For Start/Stop; Also
 	 * Has The Value Added To leftBackDrive; The Robot Will Drive Forward For
@@ -174,7 +174,7 @@ public class Robot extends IterativeRobot {
 		if (Dashboard == 0) {
 			this.driveForward();
 		} else if (Dashboard == 1) {
-			this.shootAndCross();
+			//this.shootAndCross();
 		} else if (Dashboard == 2){
 			this.onlyGear();
 		}
