@@ -1,5 +1,5 @@
 /*Evan Couchman
- * 2/6/2017
+ * 3/3/2017
  * FRC Robotics 2017
  * Programs the CANTalon of the intake system (sweeper)
 */
@@ -21,16 +21,6 @@ public class Pickup {
 
 	public CANTalon pickUp;
 
-	// A deadband sets the tolerance of the joystick
-	// Change if necessary
-	public double deadband(double value) {
-		if (Math.abs(value) < .15) {
-			return 0;
-		} else {
-			return value;
-		}
-	}
-
 	public void pickupInit() {
 
 		/*
@@ -49,8 +39,20 @@ public class Pickup {
 
 	// TeleOp phase
 	public void pickupTeleopPeriodic() {
-
-		pickUp.set(deadband(-controller.getLeftY() * 0.8));
+		
+		boolean rb = SecondController.getInstance().getRawButton(SecondController.BUTTON_RB);
+		
+		boolean lb = SecondController.getInstance().getRawButton(SecondController.BUTTON_LB);
+		
+		if(rb){
+			pickUp.set(-0.6);
+			
+		} else if(lb){
+			pickUp.set(0.6);
+			
+		} else {
+			pickUp.set(0);
+		}		
 	}
 
 	public void testInit() {
