@@ -85,6 +85,8 @@ public class Drive {
 		// rightAutoSpeed = -inputs.rightAutoSpeed;
 	}
 
+	
+	
 	public void driveTeleopPeriodic() {
 
 		// establishes x as the value of the x axis on the left stick, y as the
@@ -93,6 +95,13 @@ public class Drive {
 		double x = -deadband(controller.getLeftX());
 		double y = deadband(controller.getLeftY());
 		double r = deadband(controller.getRightX());
+		
+		driveMecanum(x,y,r);
+		
+	}
+	
+	public void driveMecanum (double x, double y, double r)
+	{
 		// sets the 4 wheels to always be effected by the math based on the
 		// controller inputs
 		double v_FrontLeft = r - y - x;
