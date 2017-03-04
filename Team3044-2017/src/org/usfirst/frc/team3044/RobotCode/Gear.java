@@ -1,3 +1,7 @@
+/*
+ * Allanah Mathews
+ * 3/3/2017
+ */
 package org.usfirst.frc.team3044.RobotCode;
 
 import org.usfirst.frc.team3044.Reference.*;
@@ -49,10 +53,11 @@ public class Gear {
 		 ***************************************************************************/
 		// B = in or retracting
 		boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
+		boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
 
-		if (!buttonBPressed && limitSwitchIn.get()) {
+		if (buttonXPressed && !limitSwitchIn.get()) {
 			GearCANTalon.set(.5);
-		} else if (buttonBPressed && limitSwitchOut.get()) {
+		} else if (buttonBPressed && !limitSwitchOut.get()) {
 			GearCANTalon.set(-1);
 		} else {
 			GearCANTalon.set(0);
