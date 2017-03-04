@@ -50,7 +50,7 @@ public class Pickup {
 	// TeleOp phase
 	public void pickupTeleopPeriodic() {
 
-		pickUp.set(deadband(-controller.getLeftY()));
+		pickUp.set(deadband(-controller.getLeftY() * 0.8));
 	}
 
 	public void testInit() {

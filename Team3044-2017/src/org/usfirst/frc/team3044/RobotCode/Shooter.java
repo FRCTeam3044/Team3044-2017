@@ -169,15 +169,13 @@ public class Shooter {
 		if (turnShooterOn) {
 
 			// tests RPM to adjust the motor to regulate shooter RPMs
-			if (currentRPM > (shootingRPM - 5) && currentRPM < (shootingRPM + 5)) {
-				shooter.set(shootPower);
-				shooter2.set(shootPower);
+			if (currentRPM > (shootingRPM - 10) && currentRPM < (shootingRPM + 10)) {
 				canShoot = true;
 			}
 
 			// adds motor power if the RPM does not surpass a minimum
 			// value
-			else if (currentRPM <= (shootingRPM - 5)) {
+			if (currentRPM <= (shootingRPM - 10)) {
 				shootPower = (shootPower + .1);
 				shooter.set(shootPower);
 				shooter2.set(shootPower);
@@ -185,8 +183,8 @@ public class Shooter {
 			}
 
 			// reduces motor speed if the RPM surpasses a maximum value
-			else if (currentRPM >= (shootingRPM + 5)) {
-				shootPower = (shootPower + .1);
+			if (currentRPM >= (shootingRPM + 10)) {
+				shootPower = (shootPower - .1);
 				shooter.set(shootPower);
 				shooter2.set(shootPower);
 				canShoot = false;
