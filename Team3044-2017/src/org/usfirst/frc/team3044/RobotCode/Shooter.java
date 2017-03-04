@@ -1,5 +1,5 @@
 /* Ethan Tabachneck
- * 2/21/17
+ * 03/03/17
  * FRC Robotics 2017
  * enables usage of shooter and impeller based on RPMs of the fly wheel on
  * the shooter.
@@ -10,13 +10,9 @@ package org.usfirst.frc.team3044.RobotCode;
 // specialized functions in the code.
 import org.usfirst.frc.team3044.Reference.*;
 import com.ctre.CANTalon;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 // creates the shooter function
 public class Shooter {
@@ -28,56 +24,55 @@ public class Shooter {
 	public CANTalon shooter2;
 	public CANTalon impeller;
 	DummyTacho shooterTacho = out.shooterTachoCounter;
+	PIDController shooterPID;
+	PIDController shooter2PID;
 
 	SecondController secondCon = new SecondController();
 
-	// sets the RPM variables for tachometer
-	double currentRPM = 0;
-	final int shootingRPM = 50;
-	// double period = shooterTacho.getPeriod();
+	final double toleranceShooter = 4;
 
-	// sets powers for the powered objects
-	public double shootPower = .6;
+	double shootPower = .6;
+	double impPower = .7;
+	
+	// sets the RPM variables for tachometer
+	double p = .001, i = -1, d = 0.003, shootingRPM = 38;
 
 	// sets the true false statements to false that will determine function
 	// later on in the code
-	boolean shooterOn = false;
 	boolean canShoot = false;
 
-	// variables for fail safe
-	double resistanceCurr = 1;
-	double resistanceThres = 0;
-	boolean okayFlag = true;
-
-	// makes a timer
-	Timer time = new Timer();
-
-	// adds write commands
-	File f;
-	BufferedWriter bw;
-	FileWriter fw;
+	public boolean OnTarget(double TargetValue, double Value, double Threshold) {
+		return Math.abs(TargetValue - Value) < Threshold;
+	}
 
 	// code that runs when robot is initiated
 	public void shooterInit() {
-
-		// makes a file for data
-		try {
-			f = new File("/shooterData.txt");
-			if (!f.exists())
-				f.createNewFile();
-			fw = new FileWriter(f);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		// sets and starts a timer
-		time.reset();
-		time.start();
 
 		shooter = out.shooter;
 		shooter2 = out.shooter2;
 		impeller = out.impeller;
 
+		shooterTacho.setPIDSourceType(PIDSourceType.kRate);
+		shooterPID = new PIDController(p, i, d, shooterTacho, out.shooter);
+		shooter2PID = new PIDController(p, i, d, shooterTacho, out.shooter2);
+		shooterPID.setInputRange(0, 150);
+		shooter2PID.setInputRange(0, 150);
+		shooterPID.setOutputRange(0, 1);
+		shooter2PID.setOutputRange(0, 1);
+
+		shooterPID.enable();
+		shooter2PID.enable();
+		shooterPID.setPID(p, i, d);
+		shooter2PID.setPID(p, i, d);
+
+		shooterPID.setAbsoluteTolerance(toleranceShooter);
+		shooter2PID.setAbsoluteTolerance(toleranceShooter);
+		out.shooter.setPIDSourceType(PIDSourceType.kRate);
+		
+		SmartDashboard.putString("Target RPM", "0");
+		SmartDashboard.putString("P value", "0");
+		SmartDashboard.putString("I value", "0");
+		SmartDashboard.putString("D value", "0");
 	}
 
 	// creates what the robot does in autonomous
@@ -86,69 +81,26 @@ public class Shooter {
 
 	// creates what the robot does in teleop
 	public void shooterTeleopPeriodic() {
-
-		SmartDashboard.putString("DB/String 8", String.valueOf(shooterTacho.getRate()));
-		currentRPM = shooterTacho.getRate();
-
-		if (secondCon.getRawButton(secondCon.BUTTON_BACK)) {
+		
+		//shootingRPM = SmartDashboard.getNumber("DB/Slider 0");
+		//impPower = SmartDashboard.getNumber("DB/Slider 1");
+		//SmartDashboard.putString("DB/String 8", String.valueOf(shooterTacho.getRate()));
+		
+		SmartDashboard.putNumber("RPM value", shooterTacho.getRate());
+		/*
+		p = Double.parseDouble(SmartDashboard.getString("P value"));
+		i = Double.parseDouble(SmartDashboard.getString("I value"));
+		d = Double.parseDouble(SmartDashboard.getString("D value"));
+		shootingRPM = Double.parseDouble(SmartDashboard.getString("Target"));
+		*/
+		if(secondCon.getRawButton(secondCon.BUTTON_START)){
 			shooter.set(shootPower);
 			shooter2.set(shootPower);
-		} else {
-			shooter.set(0);
-			shooter2.set(0);
 		}
-
-		if (secondCon.getRawButton(secondCon.BUTTON_START)) {
-			impeller.set(.6);
-		} else {
-			impeller.set(0);
-		}
-
-		/*
-		 * Conditional Statement For Adding 10% and Subtracting 10% To Each
-		 * Shooter Motor
-		 */
-
-		if (secondCon.getRawButton(secondCon.BUTTON_LB)) {
-			shootPower += .01;
-		} else if (secondCon.getRawButton(secondCon.BUTTON_RB)) {
-			shootPower -= .01;
-		}
-
-		// checks for required safe mode
-		/*
-		 * resistanceCurr = shooter.getOutputVoltage() /
-		 * shooter.getOutputCurrent(); if (resistanceCurr <= resistanceThres)
-		 * okayFlag = false;
-		 */
-		okayFlag = true;
-		// sets RPMs read as to not have them change mid-read
-		// if (period != 0)
-		// currentRPM = (int) (60 / period);
-
-		// checks for the shooter being okay
-		if (okayFlag) {
-
-			// makes it so when right bumper is hit, it changes the shooter
-			// from on to off
-			if (secondCon.getTriggerLeft()) {
-				shooterOn = !shooterOn;
-			}
-			shooterStart(shooterOn);
-
-			// starts impeller method based on right triggers
-			impellerStart(secondCon.getTriggerRight());
-		} else {
-			shooterStart(false);
-			impellerStart(false);
-		}
-
-		// writes a file
-		/*
-		 * try { fw.write(time.get() + ", " + currentRPM + ", " + resistanceCurr
-		 * + "\n"); } catch (IOException e) { e.printStackTrace(); }
-		 */
-
+			
+		
+		startShooter(secondCon.getTriggerLeft());
+		impOn(secondCon.getTriggerRight());
 	}
 
 	// the function that runs when test is initiated
@@ -161,52 +113,34 @@ public class Shooter {
 	}
 
 	// creates a method for starting the shooter
-	public void shooterStart(boolean turnShooterOn) {
+	public void startShooter(boolean onPID) {
 
-		// Checks to see if the shooter boolean is on and that the
-		// Tacho is reading the accurate RPM, and if so, allows for
-		// shooting
-		if (turnShooterOn) {
+		if (onPID) {
+			
+			shooterPID.setSetpoint(shootingRPM);
+			shooter2PID.setSetpoint(shootingRPM);
 
-			// tests RPM to adjust the motor to regulate shooter RPMs
-			if (currentRPM > (shootingRPM - 10) && currentRPM < (shootingRPM + 10)) {
+			if (OnTarget(shooterPID.getSetpoint(), shooterTacho.getRate(), 5)
+					&& OnTarget(shooter2PID.getSetpoint(), shooterTacho.getRate(), 5)) {
+				
+				System.out.println("Up to speed");
 				canShoot = true;
-			}
-
-			// adds motor power if the RPM does not surpass a minimum
-			// value
-			if (currentRPM <= (shootingRPM - 10)) {
-				shootPower = (shootPower + .1);
-				shooter.set(shootPower);
-				shooter2.set(shootPower);
-				canShoot = false;
-			}
-
-			// reduces motor speed if the RPM surpasses a maximum value
-			if (currentRPM >= (shootingRPM + 10)) {
-				shootPower = (shootPower - .1);
-				shooter.set(shootPower);
-				shooter2.set(shootPower);
+			} else {
+				
 				canShoot = false;
 			}
 		} else {
-
-			// if the shooter isn't toggled, it gets no power and makes
-			// it so impeller can't start
+		
 			canShoot = false;
-			shooter.set(0);
-			shooter2.set(0);
+			shooterPID.setSetpoint(0);
+			shooter2PID.setSetpoint(0);
 		}
 	}
 
 	// creates a method for starting the impeller
-	public void impellerStart(boolean impellerOn) {
-
-		// checks for a true from the previous check and for the
-		// trigger to be activated and then starts the impeller,
-		// if not, all shuts off
-		if (impellerOn && canShoot) {
-			impeller.set(.6);
+	public void impOn(boolean onImp) {
+		if (onImp) {
+			impeller.set(impPower);
 		} else {
 			impeller.set(0);
 		}
