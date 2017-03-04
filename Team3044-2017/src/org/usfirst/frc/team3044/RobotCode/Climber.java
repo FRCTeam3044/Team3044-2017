@@ -1,5 +1,5 @@
 /**Cassie Companion
- * 9/6/17
+ * 3/3/17
  * FRC Team 3044
  * climbs the rope using a winch.
  */
@@ -44,10 +44,10 @@ class Climber {
 
 		if (yButton) {
 			winchDrive1.set(1);
-			winchDrive2.set(1);
+			winchDrive2.set(-1);
 		} else if (aButton) {
 			winchDrive1.set(-1);
-			winchDrive2.set(-1);
+			winchDrive2.set(1);
 		} else {
 			winchDrive1.set(0);
 			winchDrive2.set(0);
