@@ -33,7 +33,7 @@ public class Shooter {
 
 	double shootPower = .6;
 	double impPower = .7;
-	
+
 	// sets the RPM variables for tachometer
 	double p = .001, i = -1, d = 0.003, shootingRPM = 38;
 
@@ -43,6 +43,7 @@ public class Shooter {
 
 	public boolean OnTarget(double TargetValue, double Value, double Threshold) {
 		return Math.abs(TargetValue - Value) < Threshold;
+
 	}
 
 	// code that runs when robot is initiated
@@ -53,8 +54,12 @@ public class Shooter {
 		impeller = out.impeller;
 
 		shooterTacho.setPIDSourceType(PIDSourceType.kRate);
-		shooterPID = new PIDController(p, i, d, shooterTacho, out.shooter);
-		shooter2PID = new PIDController(p, i, d, shooterTacho, out.shooter2);
+
+		if (shooterPID == null) {
+			shooterPID = new PIDController(p, i, d, shooterTacho, out.shooter);
+			shooter2PID = new PIDController(p, i, d, shooterTacho, out.shooter2);
+		}
+
 		shooterPID.setInputRange(0, 150);
 		shooter2PID.setInputRange(0, 150);
 		shooterPID.setOutputRange(0, 1);
@@ -68,7 +73,7 @@ public class Shooter {
 		shooterPID.setAbsoluteTolerance(toleranceShooter);
 		shooter2PID.setAbsoluteTolerance(toleranceShooter);
 		out.shooter.setPIDSourceType(PIDSourceType.kRate);
-		
+
 		SmartDashboard.putString("Target RPM", "0");
 		SmartDashboard.putString("P value", "0");
 		SmartDashboard.putString("I value", "0");
@@ -81,24 +86,51 @@ public class Shooter {
 
 	// creates what the robot does in teleop
 	public void shooterTeleopPeriodic() {
-		
-		//shootingRPM = SmartDashboard.getNumber("DB/Slider 0");
-		//impPower = SmartDashboard.getNumber("DB/Slider 1");
-		//SmartDashboard.putString("DB/String 8", String.valueOf(shooterTacho.getRate()));
-		
+
+		// shootingRPM = SmartDashboard.getNumber("DB/Slider 0");
+		// impPower = SmartDashboard.getNumber("DB/Slider 1");
+		// SmartDashboard.putString("DB/String 8", String.valueOf(shooterTacho.getRate()));
+
 		SmartDashboard.putNumber("RPM value", shooterTacho.getRate());
 		/*
-		p = Double.parseDouble(SmartDashboard.getString("P value"));
-		i = Double.parseDouble(SmartDashboard.getString("I value"));
-		d = Double.parseDouble(SmartDashboard.getString("D value"));
-		shootingRPM = Double.parseDouble(SmartDashboard.getString("Target"));
-		*/
-		if(secondCon.getRawButton(secondCon.BUTTON_START)){
+		 * p = Double.parseDouble(SmartDashboard.getString("P value"));
+		 * i = Double.parseDouble(SmartDashboard.getString("I value"));
+		 * d = Double.parseDouble(SmartDashboard.getString("D value"));
+		 * shootingRPM = Double.parseDouble(SmartDashboard.getString("Target"));
+		 */
+
+		if (secondCon.getDPadUp()) {
+			shootingRPM = shootingRPM * 1.02;
+
+			// This needs to be tested
+			/*
+			 * try {
+			 * Thread.sleep(500);
+			 * } catch (InterruptedException e) {
+			 * e.printStackTrace();
+			 * }
+			 */
+		} else if (secondCon.getDPadDown()) {
+			shootingRPM = shootingRPM / 1.02;
+
+			// This needs to be tested
+			/*
+			 * try {
+			 * Thread.sleep(500);
+			 * } catch (InterruptedException e) {
+			 * e.printStackTrace();
+			 * }
+			 */
+		}
+
+		SmartDashboard.putString("DB/String 5", String.valueOf(shootingRPM));
+		impPower = SmartDashboard.getNumber("DB/Slider 2");
+
+		if (secondCon.getRawButton(secondCon.BUTTON_START)) {
 			shooter.set(shootPower);
 			shooter2.set(shootPower);
 		}
-			
-		
+
 		startShooter(secondCon.getTriggerLeft());
 		impOn(secondCon.getTriggerRight());
 	}
@@ -116,21 +148,20 @@ public class Shooter {
 	public void startShooter(boolean onPID) {
 
 		if (onPID) {
-			
+
 			shooterPID.setSetpoint(shootingRPM);
 			shooter2PID.setSetpoint(shootingRPM);
 
-			if (OnTarget(shooterPID.getSetpoint(), shooterTacho.getRate(), 5)
-					&& OnTarget(shooter2PID.getSetpoint(), shooterTacho.getRate(), 5)) {
-				
+			if (OnTarget(shooterPID.getSetpoint(), shooterTacho.getRate(), 5) && OnTarget(shooter2PID.getSetpoint(), shooterTacho.getRate(), 5)) {
+
 				System.out.println("Up to speed");
 				canShoot = true;
 			} else {
-				
+
 				canShoot = false;
 			}
 		} else {
-		
+
 			canShoot = false;
 			shooterPID.setSetpoint(0);
 			shooter2PID.setSetpoint(0);

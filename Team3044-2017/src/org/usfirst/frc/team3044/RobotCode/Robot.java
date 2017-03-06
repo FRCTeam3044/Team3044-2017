@@ -1,15 +1,7 @@
 package org.usfirst.frc.team3044.RobotCode;
 
-import org.usfirst.frc.team3044.RobotCode.*;
-
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.usfirst.frc.team3044.Reference.*;
-
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,134 +24,101 @@ public class Robot extends IterativeRobot {
 
 	public void robotInit() {
 		Outputs.getInstance().init();
+		vision.robotInit();
 	}
 
 	public void autonomousInit() {
+
 	}
 
-	/*
-	 * This Is The Zero Auto Code; This Code Uses Time For Start/Stop; Also Has
-	 * The Value Added To leftBackDrive; The Robot Will Drive Forward For Two
-	 * Seconds Then Stop;
-	 */
-	public void driveForward() {
-		int driveForwardState = 0;
+	// ------------------------------------------------------------------------------------------------------------------------------------------------
+	int driveForwardState = 0;
 
+	public void driveForward() {
 		switch (driveForwardState) {
 		case 0:
-			out.leftFrontDrive.set(-.25);
-			out.leftBackDrive.set(-.25 * .84);
-			out.rightFrontDrive.set(.25);
-			out.rightBackDrive.set(.25);
-
+			out.leftFrontDrive.set(-.6);
+			out.leftBackDrive.set(-.6);
+			out.rightFrontDrive.set(.6);
+			out.rightBackDrive.set(.6);
 			time.start();
 			driveForwardState = 1;
-
 			break;
 
 		case 1:
-			if (time.get() > 2) {
+			if (time.get() > 1.5) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
-
 				driveForwardState = 5;
 			}
 			break;
-
 		}
 	}
 
-	/*
-	 * This Is The First Auto Code; This Code Uses Time For Start/Stop; Also Has
-	 * The Value Added To leftBackDrive; The Robot Will Shoot And Run Impeller
-	 * For 3 Seconds Then Stop; The Robot Will Then Drive Forward For Three
-	 * Seconds;
-	 */
-/*	public void shootAndCross() {
-		int shootAndCross = 0;
+	// ------------------------------------------------------------------------------------------------------------------------------------------------
+	int middleGearState = 0;
 
-		switch (shootAndCross) {
+	public void middleGear() {
+		switch (middleGearState) {
+
 		case 0:
-			shooter.shooterStart(true);
-			shooter.impellerStart(true);
-
+			out.leftFrontDrive.set(-.5);
+			out.leftBackDrive.set(-.5);
+			out.rightFrontDrive.set(.5);
+			out.rightBackDrive.set(.5);
 			time.start();
-			shootAndCross = 1;
-
+			middleGearState = 1;
 			break;
 
 		case 1:
-			if (time.get() > 3) {
-				shooter.shooterStart(false);
-				shooter.impellerStart(false);
-
-				out.leftFrontDrive.set(-.25);
-				out.leftBackDrive.set(-.25 * .84);
-				out.rightFrontDrive.set(.25);
-				out.rightBackDrive.set(.25);
-
-				shootAndCross = 2;
-			}
-			break;
-		case 2:
-			if (time.get() > 3) {
+			if (time.get() > 1.5) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
-
-				shootAndCross = 5;
-			}
-			break;
-		}
-	}
-*/
-	/*
-	 * This Is The Second Auto Code; This Code Uses Time For Start/Stop; Also
-	 * Has The Value Added To leftBackDrive; The Robot Will Drive Forward For
-	 * Two Seconds Then Stop; Then The Gear Mechanism Will Open; Then The Gear
-	 * Mechanism Will Close;
-	 */
-	public void onlyGear() {
-		int onlyGearState = 0;
-
-		switch (onlyGearState) {
-		case 0:
-			out.leftFrontDrive.set(-.25);
-			out.leftBackDrive.set(-.25 * .84);
-			out.rightFrontDrive.set(.25);
-			out.rightBackDrive.set(.25);
-
-			time.start();
-			onlyGearState = 1;
-
-			break;
-
-		case 1:
-			if (time.get() > 2) {
-				out.leftFrontDrive.set(0);
-				out.leftBackDrive.set(0);
-				out.rightFrontDrive.set(0);
-				out.rightBackDrive.set(0);
-
-				onlyGearState = 2;
-			}
-			break;
-
-		case 2:
-			if (time.get() > 2) {
 				out.GearCANTalon.set(-1);
+				time.stop();
+				time.reset();
+				time.start();
+				middleGearState = 2;
 			}
-			onlyGearState = 3;
 			break;
 
-		case 3:
-			if (time.get() > 2) {
-				out.GearCANTalon.set(0.5);
+		case 2:
+			if (time.get() > 1 || gear.limitSwitchOut.get()) {
+				out.GearCANTalon.set(0);
+				middleGearState = 3;
 			}
-			onlyGearState = 5;
+		}
+	}
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------
+	int sideGearState = 0;
+
+	public void sideGear() {
+		switch (sideGearState) {
+		case 0:
+			out.leftFrontDrive.set(-.6);
+			out.leftBackDrive.set(-.6);
+			out.rightFrontDrive.set(.6);
+			out.rightBackDrive.set(.6);
+			time.start();
+			sideGearState = 1;
+			break;
+
+		case 1:
+			if (time.get() > 1.5) {
+				out.leftFrontDrive.set(0);
+				out.leftBackDrive.set(0);
+				out.rightFrontDrive.set(.3);
+				out.rightBackDrive.set(.3);
+				time.stop();
+				time.reset();
+				time.start();
+				sideGearState = 2;
+			}
 			break;
 		}
 	}
@@ -169,14 +128,14 @@ public class Robot extends IterativeRobot {
 	 * Done By Using A Slider;
 	 */
 	public void autonomousPeriodic() {
-		double Dashboard = SmartDashboard.getNumber("DB/Slider 0", 7);
+		double Dashboard = SmartDashboard.getNumber("DB/Slider 0", 10);
 
 		if (Dashboard == 0) {
 			this.driveForward();
 		} else if (Dashboard == 1) {
-			//this.shootAndCross();
-		} else if (Dashboard == 2){
-			this.onlyGear();
+			this.middleGear();
+		} else if (Dashboard == 2) {
+			this.sideGear();
 		}
 	}
 
@@ -205,8 +164,8 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void testInit() {
-		vision.robotInit();
-		vision.autonomousInit();
+
+		// vision.autonomousInit();
 		try {
 			diagnosticsServer.start(0, true);
 		} catch (IOException e) {

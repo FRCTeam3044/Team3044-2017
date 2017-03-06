@@ -17,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Drive {
 	PowerDistributionPanel pdp = new PowerDistributionPanel();
 	// states buttons and joystick
-	private Joystick firstJoy; 
+	private Joystick firstJoy;
 	public static int BUTTON_START = 8;
 	public static int BUTTON_A = 1;
 	public static int BUTTON_B = 2;
@@ -85,8 +85,6 @@ public class Drive {
 		// rightAutoSpeed = -inputs.rightAutoSpeed;
 	}
 
-	
-	
 	public void driveTeleopPeriodic() {
 
 		// establishes x as the value of the x axis on the left stick, y as the
@@ -94,14 +92,13 @@ public class Drive {
 		// right stick
 		double x = -deadband(controller.getLeftX());
 		double y = deadband(controller.getLeftY());
-		double r = deadband(controller.getRightX());
-		
-		driveMecanum(x,y,r);
-		
+		double r = -deadband(controller.getRightX());
+
+		driveMecanum(x, y, r);
+
 	}
-	
-	public void driveMecanum (double x, double y, double r)
-	{
+
+	public void driveMecanum(double x, double y, double r) {
 		// sets the 4 wheels to always be effected by the math based on the
 		// controller inputs
 		double v_FrontLeft = r - y - x;
@@ -111,13 +108,13 @@ public class Drive {
 		// Regulates speed so it does not go over the motors limits based on the
 		// math and a value f which is equal to 1
 		double f = 1;
-		if (Math.abs(v_FrontLeft) > f)
+		if (v_FrontLeft > f)
 			f = v_FrontLeft;
-		if (Math.abs(v_FrontRight) > f)
+		if (v_FrontRight > f)
 			f = v_FrontRight;
-		if (Math.abs(v_BackLeft) > f)
+		if (v_BackLeft > f)
 			f = v_BackLeft;
-		if (Math.abs(v_BackRight) > f)
+		if (v_BackRight > f)
 			f = v_BackRight;
 
 		// when start button is held for half a second the controls invert
@@ -130,84 +127,82 @@ public class Drive {
 		if (r != 0) {
 
 			// test if TFlip is true or false, if false then use default turning
-			if (x == 0 && y == 0){
-				
-				if(r > 0 ){
-				
-					leftFrontDrive.set(r);
-					leftBackDrive.set(r);
-					rightFrontDrive.set(-r);
-					rightBackDrive.set(-r);
-					
-				}
-				if(r < 0 ){
-				
+			if (x == 0 && y == 0) {
+
+				if (r > 0) {
+
 					leftFrontDrive.set(-r);
 					leftBackDrive.set(-r);
 					rightFrontDrive.set(r);
 					rightBackDrive.set(r);
-					
+
 				}
-				
-			}	
-				
+				if (r < 0) {
+
+					leftFrontDrive.set(r);
+					leftBackDrive.set(r);
+					rightFrontDrive.set(-r);
+					rightBackDrive.set(-r);
+
+				}
+
 			}
-		else if (TFlip == false) {
 
-				// if r is greater than 0 then double the power of the left
-				// motors and half the
-				// power of the right motors
+		} else if (TFlip == false) {
 
-				if (r > 0) {
-					leftFrontDrive.set((v_FrontLeft / f) * 2);
-					rightFrontDrive.set((v_FrontRight / f) / 2);
-					leftBackDrive.set((v_BackLeft / f) * 2);
-					rightBackDrive.set((v_BackRight / f) / 2);
-				}
+			// if r is greater than 0 then double the power of the left
+			// motors and half the
+			// power of the right motors
 
-				// if r is less than 0 then double the power of the right motors
-				// and half
-				// the power of the left motors
-
-				else {
-					leftFrontDrive.set((v_FrontLeft / f) / 2);
-					rightFrontDrive.set((v_FrontRight / f) * 2);
-					leftBackDrive.set((v_BackLeft / f) / 2);
-					rightBackDrive.set((v_BackRight / f) * 2);
-				}
+			if (r < 0) {
+				leftFrontDrive.set((-v_FrontLeft / f) * 2);
+				rightFrontDrive.set((-v_FrontRight / f) / 2);
+				leftBackDrive.set((-v_BackLeft / f) * 2);
+				rightBackDrive.set((-v_BackRight / f) / 2);
 			}
-				// if TFlip is true, invert the turning
 
-			if (TFlip == true) {
-				
-				// if r is greater than 0 then double the power of the right
-				// motors and half the power of the left motors
+			// if r is less than 0 then double the power of the right motors
+			// and half
+			// the power of the left motors
 
-				if (r > 0) {
-					leftFrontDrive.set(((v_FrontLeft / f) / 2)*.9);
-					rightFrontDrive.set(((v_FrontRight / f) * 2)*.9);
-					leftBackDrive.set(((v_BackLeft / f) / 2)*.9);
-					rightBackDrive.set(((v_BackRight / f) * 2)*.9);
-				}
-				// if r is less than 0 then double the power of the left
-				// motors and half the power of the right motors
-					else {
-					leftFrontDrive.set(((v_FrontLeft / f) * 2)*.9);
-					rightFrontDrive.set(((v_FrontRight / f) / 2)*.9);
-					leftBackDrive.set(((v_BackLeft / f) * 2)*.9);
-					rightBackDrive.set(((v_BackRight / f) / 2)*.9);
-			
-				}			
+			else {
+				leftFrontDrive.set((-v_FrontLeft / f) / 2);
+				rightFrontDrive.set((-v_FrontRight / f) * 2);
+				leftBackDrive.set((-v_BackLeft / f) / 2);
+				rightBackDrive.set((-v_BackRight / f) * 2);
 			}
-			
-		//if the r value is 0 then apply the basic algorythm to the wheels
-			
-		else 
-		{
-			leftFrontDrive.set((v_FrontLeft / f)*.9);
-			rightFrontDrive.set((v_FrontRight / f)*.9);
-			leftBackDrive.set((v_BackLeft / f)*.9);
-			rightBackDrive.set((v_BackRight / f)*.9);
+		}
+		// if TFlip is true, invert the turning
+
+		if (TFlip == true) {
+
+			// if r is greater than 0 then double the power of the right
+			// motors and half the power of the left motors
+
+			if (r > 0) {
+				leftFrontDrive.set(((-v_FrontLeft / f) / 2) * .9);
+				rightFrontDrive.set(((-v_FrontRight / f) * 2) * .9);
+				leftBackDrive.set(((-v_BackLeft / f) / 2) * .9);
+				rightBackDrive.set(((-v_BackRight / f) * 2) * .9);
+			}
+			// if r is less than 0 then double the power of the left
+			// motors and half the power of the right motors
+			else {
+				leftFrontDrive.set(((-v_FrontLeft / f) * 2) * .9);
+				rightFrontDrive.set(((-v_FrontRight / f) / 2) * .9);
+				leftBackDrive.set(((-v_BackLeft / f) * 2) * .9);
+				rightBackDrive.set(((-v_BackRight / f) / 2) * .9);
+
+			}
+		}
+
+		// if the r value is 0 then apply the basic algorythm to the wheels
+
+		else {
+			leftFrontDrive.set((-v_FrontLeft / f) * .9);
+			rightFrontDrive.set((-v_FrontRight / f) * .9);
+			leftBackDrive.set((-v_BackLeft / f) * .9);
+			rightBackDrive.set((-v_BackRight / f) * .9);
 		}
 	}
 
@@ -221,4 +216,5 @@ public class Drive {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}}
+	}
+}

@@ -45,14 +45,14 @@ public class Pickup {
 		boolean lb = SecondController.getInstance().getRawButton(SecondController.BUTTON_LB);
 		
 		if(rb){
-			pickUp.set(-0.6);
+			pickUp.set(-0.75);
 			
 		} else if(lb){
-			pickUp.set(0.6);
+			pickUp.set(0.75);
 			
 		} else {
 			pickUp.set(0);
-		}		
+		}
 	}
 
 	public void testInit() {
