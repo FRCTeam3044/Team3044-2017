@@ -17,13 +17,28 @@ public class Vision {
 
 	public void robotInit() {
 		// CAMERA_IP
-		FrontCamera = new AxisCamera("Gear Camera", "10.30.44.11");
-		FrontCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-		// CameraServer.getInstance().startAutomaticCapture(Vision.FrontCamera);
-		CameraServer.getInstance().startAutomaticCapture().setResolution(640, 480);
+		//FrontCamera = new AxisCamera("Gear Camera", "10.30.44.11");
+		//FrontCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+		
+		FrontCamera = CameraServer.getInstance().addAxisCamera("10.30.44.11");
+
+		//USB camera
+		CameraServer.getInstance().startAutomaticCapture();
+		
+		//CameraServer.getInstance().startAutomaticCapture(Vision.FrontCamera);
+		//CameraServer.getInstance().startAutomaticCapture().setResolution(640, 480);
 		// FrontCamera = CameraServer.getInstance().addAxisCamera(host)
 		// Object O = CameraServer.getInstance();
 		// if (FrontCamera ==null) {System.out.println("Front camera is null!!!!"); }
+		visionThread = new VisionProcessingThread();
+		//visionThread.start();
+	}
+	
+	public void stopVisionThread(){
+		visionThread.Run=false;
+	}
+	
+	public void startVisionThread(){
 		visionThread = new VisionProcessingThread();
 		visionThread.start();
 	}
