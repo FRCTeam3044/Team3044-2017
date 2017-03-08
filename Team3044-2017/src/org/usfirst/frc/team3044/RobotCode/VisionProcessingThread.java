@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class VisionProcessingThread extends Thread {
 
+	public boolean Run;
 	// static AxisCamera FrontCamera;
 	static GripPipeline pipeline = new GripPipeline();
 	public int rect1_x;
@@ -32,7 +33,8 @@ public class VisionProcessingThread extends Thread {
 	}
 
 	public void run() {
-		while (true) {
+		Run=true;
+		while (Run) {
 
 			SimpleDateFormat f = new SimpleDateFormat("HH:mm:ss.SSS");
 			SmartDashboard.putString("DB/String 9", "VPT: " + f.format(new Date()));
@@ -51,7 +53,11 @@ public class VisionProcessingThread extends Thread {
 				continue;
 			}
 
-			pipeline.process(image);
+			try {
+				pipeline.process(image);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 
 			if (!pipeline.filterContoursOutput().isEmpty()) {
 
