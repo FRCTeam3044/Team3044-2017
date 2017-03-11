@@ -3,10 +3,16 @@ package org.usfirst.frc.team3044.Reference;
 import org.usfirst.frc.team3044.Reference.FirstController;
 import org.usfirst.frc.team3044.Reference.SecondController;
 
+import edu.wpi.first.wpilibj.DigitalInput;
+
 public class Inputs {
 	
 	static FirstController firstJoy = FirstController.getInstance();
 	static SecondController secondJoy = SecondController.getInstance();
+	
+	public static DigitalInput limitSwitchOut = new DigitalInput(5);
+	public static DigitalInput limitSwitchIn = new DigitalInput(4);
+
 	
 	//Drive 
 	public static double leftDriveSpeed;
