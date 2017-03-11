@@ -105,13 +105,14 @@ public class VisionProcessingThread extends Thread {
 					rect2_centery = rect2_y + (rightRectangle.height / 2);
 					area_difference = (rect1_area - rect2_area);
 
-					// Makes sure that the rectangle on the left is ALWAYS rectangle 1
+					/*// Makes sure that the rectangle on the left is ALWAYS rectangle 1
 					boolean r1 = (rect1_x < rect2_x);
 					if (r1) {
 						center_of_board = (rect1_x + rect2_x + rect2_width) / 2;
 					} else {
 						center_of_board = (rect2_x + rect1_x + rect1_width) / 2;
-					}
+					}*/
+					center_of_board=((rect1_x+rect1_width)+rect2_x)/2;
 				}
 			}
 		}
