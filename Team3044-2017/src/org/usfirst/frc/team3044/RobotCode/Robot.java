@@ -158,6 +158,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledInit() {
+		diagnosticsServer.stop(); 
 	}
 
 	public void disabledPeriodic() {
