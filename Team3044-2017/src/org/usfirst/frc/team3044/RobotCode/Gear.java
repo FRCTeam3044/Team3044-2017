@@ -15,8 +15,8 @@ public class Gear {
 	public CANTalon GearCANTalon;
 
 	// public CANTalon GearCantalon = new CANTalon(2)
-	public DigitalInput limitSwitchOut = new DigitalInput(5);
-	public DigitalInput limitSwitchIn = new DigitalInput(4);
+	public DigitalInput limitSwitchOut = Inputs.limitSwitchOut;
+	public DigitalInput limitSwitchIn = Inputs.limitSwitchIn;
 
 	public Outputs out = Outputs.getInstance();
 
@@ -58,7 +58,7 @@ public class Gear {
 		if (buttonXPressed && !limitSwitchIn.get()) {
 			GearCANTalon.set(.5);
 		} else if (buttonBPressed && !limitSwitchOut.get()) {
-			GearCANTalon.set(-1);
+			GearCANTalon.set(-.75);
 		} else {
 			GearCANTalon.set(0);
 		}
