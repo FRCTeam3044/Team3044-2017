@@ -159,6 +159,7 @@ public class Robot extends IterativeRobot {
 
 	public void disabledInit() {
 		diagnosticsServer.stop(); 
+		vision.stopVisionThread();
 	}
 
 	public void disabledPeriodic() {
@@ -166,6 +167,7 @@ public class Robot extends IterativeRobot {
 
 	public void testInit() {
 
+		vision.startVisionThread();
 		// vision.autonomousInit();
 		try {
 			diagnosticsServer.start(0, true);
