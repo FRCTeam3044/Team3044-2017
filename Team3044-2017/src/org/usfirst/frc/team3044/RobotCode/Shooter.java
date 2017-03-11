@@ -124,7 +124,8 @@ public class Shooter {
 		}
 
 		SmartDashboard.putString("DB/String 5", String.valueOf(shootingRPM));
-		impPower = SmartDashboard.getNumber("DB/Slider 2");
+		impPower = 1; 
+		//impPower = SmartDashboard.getNumber("DB/Slider 2");
 
 		if (secondCon.getRawButton(secondCon.BUTTON_START)) {
 			shooter.set(shootPower);
