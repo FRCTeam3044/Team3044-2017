@@ -1,82 +1,62 @@
-/*Colin MacDonald
- * Implements the GripPipeline and VisionProcessingThread to find the gear deposit station
- * Maximum range of 11 feet
- * Minimum range of 1 foot
+/*Colin MacDonald		
+ * Implements the GripPipeline and VisionProcessingThread to find the gear deposit station		
+ * Maximum range of 11 feet		
+ * Minimum range of 1 foot		
 */
 package org.usfirst.frc.team3044.RobotCode;
 
-import org.usfirst.frc.team3044.Reference.*;
-import org.usfirst.frc.team3044.RobotCode.*;
-import com.ctre.CANTalon;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.videoio.VideoCapture;
+import org.usfirst.frc.team3044.Reference.Outputs;
 
 import edu.wpi.cscore.AxisCamera;
-import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.vision.VisionRunner;
-import edu.wpi.first.wpilibj.vision.VisionThread;
 
-public class Vision extends IterativeRobot {
+public class Vision {
 
 	public static AxisCamera FrontCamera;
-	
-
-	// Sets the image width and height
-	private static final int IMG_WIDTH = 320; // Half is 160
+	private static final int IMG_WIDTH = 320;
 	private static final int IMG_HEIGHT = 240;
-
-	// Built in drive function could be used, or our own functions
 	private RobotDrive drive;
-	public static Object imgLock = new Object();
-
-	// Declares the visionThread
+	private final Object imgLock = new Object();
 	private VisionProcessingThread visionThread;
-
-	// Sets a variable drive speed
-	public static double drive_speed = .15;
-
 	int state = 0;
 
-	@Override
 	public void robotInit() {
 		// CAMERA_IP
+		// FrontCamera = new AxisCamera("Gear Camera", "10.30.44.11");
+		// FrontCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
+
 		FrontCamera = CameraServer.getInstance().addAxisCamera("10.30.44.11");
 
-		//USB camera
+		// USB camera
 		CameraServer.getInstance().startAutomaticCapture();
 
-		// ClimberCamera.setResolution(320, 240);
-
-		state = 0;
-		// Sets the camera resolution to the pre-defined size
-		FrontCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-
-		// Starts the visionThread
-		visionThread = new VisionProcessingThread(Vision.FrontCamera);
-		// visionThread = new VisionProcessingThread(Vision.ClimberCamera);
-		visionThread.start();
+		// CameraServer.getInstance().startAutomaticCapture(Vision.FrontCamera);
+		// CameraServer.getInstance().startAutomaticCapture().setResolution(640, 480);
+		// FrontCamera = CameraServer.getInstance().addAxisCamera(host)
+		// Object O = CameraServer.getInstance();
+		// if (FrontCamera ==null) {System.out.println("Front camera is null!!!!"); }
+		visionThread = new VisionProcessingThread();
+		// visionThread.start();
 
 	}
 
-	// Declares the states used
+	public void stopVisionThread() {
+		visionThread.Run = false;
+	}
+
+	public void startVisionThread() {
+		visionThread = new VisionProcessingThread();
+		visionThread.start();
+	}
+
 	final int ALIGN = 0; // Aligns the robot and does not move forward
 	final int APPROACH = 1; // Moves forward and aligns at a slower speed
 	final int FINISH = 2; // Close to gear deposit station, switches to time and deposits gear
 
-	@Override
 	public void autonomousPeriodic() {
-
-		// X is is left and right translational, Y is forwards and backwards, R is rotational.
 		double x = 0, y = 0, r = 0;
 		SmartDashboard.putString("DB/String 8", String.valueOf(state));
 
@@ -90,14 +70,14 @@ public class Vision extends IterativeRobot {
 			case ALIGN:
 
 				// If the center is to the right, translate to the right at a scaled speed
-				if (visionThread.centerOfBoard < 150) {
-					x = -(Math.abs(visionThread.centerOfBoard - 160) / 40) * .6;
+				if (visionThread.center_of_board < 150) {
+					x = -(Math.abs(visionThread.center_of_board - 160) / 40) * .6;
 					x -= .1;
 					System.out.println("1");
 
 					// If the center is to the left, translate to the left at a scaled speed
-				} else if (visionThread.centerOfBoard > 170) {
-					x = (Math.abs(visionThread.centerOfBoard - 160) / 40) * .6;
+				} else if (visionThread.center_of_board > 170) {
+					x = (Math.abs(visionThread.center_of_board - 160) / 40) * .6;
 					x += .1;
 					System.out.println("2");
 
@@ -108,10 +88,10 @@ public class Vision extends IterativeRobot {
 
 				}
 				// If the difference in area is more than 50, correct it.
-				if (Math.abs(visionThread.areaDifference) > 50) {
+				if (Math.abs(visionThread.area_difference) > 50) {
 
 					// Scaled rotation - the more tilted the target is, the faster the robot rotates
-					r = (visionThread.areaDifference / 350) * .2;
+					r = (visionThread.area_difference / 350) * .2;
 					System.out.println("4");
 
 				} else
@@ -119,7 +99,7 @@ public class Vision extends IterativeRobot {
 				System.out.println("5");
 
 				// If the robot is aligned, move onto the next state
-				if (visionThread.centerOfBoard > 150 && visionThread.centerOfBoard < 170 && Math.abs(visionThread.areaDifference) <= 50) {
+				if (visionThread.center_of_board > 150 && visionThread.center_of_board < 170 && Math.abs(visionThread.area_difference) <= 50) {
 					state++;
 					System.out.println("6");
 				}
@@ -137,10 +117,14 @@ public class Vision extends IterativeRobot {
 			case APPROACH:
 
 				// If the area difference is less than 50, the center of the board is between 150 and 170, and the rectangle area is less than 2000, drive forward
-				if (Math.abs(visionThread.areaDifference) <= 50 && visionThread.centerOfBoard > 150 && visionThread.centerOfBoard < 170 && visionThread.rect1_area < 2000) {
+				if (Math.abs(visionThread.area_difference) <= 50 && visionThread.center_of_board > 150 && visionThread.center_of_board < 170 && visionThread.rect1_area < 2000
+						&& visionThread.rect1_area > 1000) {
 					y = ((2000 - visionThread.rect1_area) / 1500) * .3;
 					y += .1;
 					System.out.println("8");
+				} else if (visionThread.rect1_area < 1000) {
+					y = .3;
+
 				} else {
 
 					// If they are not true, don't drive forward
@@ -148,13 +132,13 @@ public class Vision extends IterativeRobot {
 					System.out.println("9");
 
 					// Translate and rotate at a decreased speed than the first case
-					if (visionThread.centerOfBoard < 150) {
-						x = -(Math.abs(visionThread.centerOfBoard - 160) / 40) * .4;
+					if (visionThread.center_of_board < 150) {
+						x = -(Math.abs(visionThread.center_of_board - 160) / 40) * .4;
 						System.out.println("10");
 
 						// If the center is to the left, translate to the left at a scaled speed
-					} else if (visionThread.centerOfBoard > 170) {
-						x = (Math.abs(visionThread.centerOfBoard - 160) / 40) * .4;
+					} else if (visionThread.center_of_board > 170) {
+						x = (Math.abs(visionThread.center_of_board - 160) / 40) * .4;
 						System.out.println("11");
 
 						// If the center of the board is in the center of the image, don't translate
@@ -163,10 +147,10 @@ public class Vision extends IterativeRobot {
 						System.out.println("12");
 					}
 					// If the difference in area is more than 50, correct it.
-					if (Math.abs(visionThread.areaDifference) > 50) {
+					if (Math.abs(visionThread.area_difference) > 50) {
 
 						// Scaled rotation - the more tilted the target is, the faster the robot rotates
-						r = (visionThread.areaDifference / 350) * .2;
+						r = (visionThread.area_difference / 350) * .2;
 						System.out.println("13");
 
 					} else
@@ -252,25 +236,23 @@ public class Vision extends IterativeRobot {
 		Outputs.getInstance().leftBackDrive.set(v_BackLeft / f);
 		Outputs.getInstance().rightBackDrive.set(v_BackRight / f);
 
-		// Puts various values in the SmartDashboard for testing, will later be removed
 		SmartDashboard.putString("DB/String 0", "rect1_x: " + String.valueOf(visionThread.rect1_x));
 		SmartDashboard.putString("DB/String 1", "rect1_y: " + String.valueOf(visionThread.rect1_y));
 		SmartDashboard.putString("DB/String 2", "rect1_area: " + String.valueOf(visionThread.rect1_area));
-		SmartDashboard.putString("DB/String 3", "Center of Board: " + String.valueOf(visionThread.centerOfBoard));
-		SmartDashboard.putString("DB/String 4", "Area Difference " + String.valueOf(visionThread.areaDifference));
 		SmartDashboard.putString("DB/String 5", "rect2_x: " + String.valueOf(visionThread.rect2_x));
 		SmartDashboard.putString("DB/String 6", "rect2_y: " + String.valueOf(visionThread.rect2_y));
 		SmartDashboard.putString("DB/String 7", "rect2_area: " + String.valueOf(visionThread.rect2_area));
 
-		// SmartDashboard.putString("DB/String 8", "center x,y: " + String.valueOf(visionThread.rect2_centerx) + "," + String.valueOf(visionThread.rect2_centery));
+		// SmartDashboard.putString("DB/String 3", "center x,y: " + String.valueOf(visionThread.center_1_x) + "," + String.valueOf(visionThread.center_1_y));
+		// SmartDashboard.putString("DB/String 8", "center x,y: " + String.valueOf(visionThread.center_2_x) + "," + String.valueOf(visionThread.center_2_y));
 	}
 
 	public void disabledPeriodic() {
 		SmartDashboard.putString("DB/String 0", "rect1_x: " + String.valueOf(visionThread.rect1_x));
 		SmartDashboard.putString("DB/String 1", "rect1_y: " + String.valueOf(visionThread.rect1_y));
 		SmartDashboard.putString("DB/String 2", "rect1_area: " + String.valueOf(visionThread.rect1_area));
-		SmartDashboard.putString("DB/String 3", "Center of Board: " + String.valueOf(visionThread.centerOfBoard));
-		SmartDashboard.putString("DB/String 4", "Area Difference " + String.valueOf(visionThread.areaDifference));
+		// SmartDashboard.putString("DB/String 3", "Center of Board: " + String.valueOf(visionThread.centerOfBoard));
+		// SmartDashboard.putString("DB/String 4", "Area Difference " + String.valueOf(visionThread.areaDifference));
 		SmartDashboard.putString("DB/String 5", "rect2_x: " + String.valueOf(visionThread.rect2_x));
 		SmartDashboard.putString("DB/String 6", "rect2_y: " + String.valueOf(visionThread.rect2_y));
 		SmartDashboard.putString("DB/String 7", "rect2_area: " + String.valueOf(visionThread.rect2_area));
