@@ -5,6 +5,7 @@
 */
 package org.usfirst.frc.team3044.RobotCode;
 
+import org.usfirst.frc.team3044.Reference.Inputs;
 import org.usfirst.frc.team3044.Reference.Outputs;
 
 import edu.wpi.cscore.AxisCamera;
@@ -12,6 +13,7 @@ import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 
 public class Vision {
 
@@ -21,7 +23,12 @@ public class Vision {
 	private RobotDrive drive;
 	private final Object imgLock = new Object();
 	private VisionProcessingThread visionThread;
-	int state = 0;
+	int state = 1;
+	int timeState = 0;
+	int count = 0;
+	
+
+	Timer time = new Timer();
 
 	public void robotInit() {
 		// CAMERA_IP
@@ -31,10 +38,10 @@ public class Vision {
 		FrontCamera = CameraServer.getInstance().addAxisCamera("10.30.44.11");
 
 		// USB camera
-		CameraServer.getInstance().startAutomaticCapture();
+		// CameraServer.getInstance().startAutomaticCapture();
 
 		// CameraServer.getInstance().startAutomaticCapture(Vision.FrontCamera);
-		// CameraServer.getInstance().startAutomaticCapture().setResolution(640, 480);
+		CameraServer.getInstance().startAutomaticCapture().setResolution(640, 480);
 		// FrontCamera = CameraServer.getInstance().addAxisCamera(host)
 		// Object O = CameraServer.getInstance();
 		// if (FrontCamera ==null) {System.out.println("Front camera is null!!!!"); }
@@ -50,11 +57,13 @@ public class Vision {
 	public void startVisionThread() {
 		visionThread = new VisionProcessingThread();
 		visionThread.start();
+		state = 1;
 	}
 
 	final int ALIGN = 0; // Aligns the robot and does not move forward
 	final int APPROACH = 1; // Moves forward and aligns at a slower speed
-	final int FINISH = 2; // Close to gear deposit station, switches to time and deposits gear
+	final int FINISH = 2; // Close to gear deposit station, switches to time
+	final int GEAR = 3; // and deposits gear
 
 	public void autonomousPeriodic() {
 		double x = 0, y = 0, r = 0;
@@ -62,12 +71,30 @@ public class Vision {
 
 		// Uses an object
 		synchronized (imgLock) {
+			
+			SmartDashboard.putNumber("Area difference", visionThread.area_difference);
+			SmartDashboard.putNumber("Board center", visionThread.center_of_board);
+
 
 			// Start of the cases
 			switch (state) {
 
 			// Aligns the robot and does not move forward
 			case ALIGN:
+				
+				switch (timeState) {
+				case 0:
+					y = .45;
+					time.start();
+					timeState = 1;
+				break;
+				case 1:
+					if (time.get() == .5) {
+						y = 0;
+						timeState = 500;
+					}
+				break;
+				}
 
 				// If the center is to the right, translate to the right at a scaled speed
 				if (visionThread.center_of_board < 150) {
@@ -91,7 +118,7 @@ public class Vision {
 				if (Math.abs(visionThread.area_difference) > 50) {
 
 					// Scaled rotation - the more tilted the target is, the faster the robot rotates
-					r = (visionThread.area_difference / 350) * .2;
+					//r = -((visionThread.area_difference / 350) * .2);
 					System.out.println("4");
 
 				} else
@@ -121,7 +148,7 @@ public class Vision {
 						&& visionThread.rect1_area > 1000) {
 					y = ((2000 - visionThread.rect1_area) / 1500) * .3;
 					y += .1;
-					System.out.println("8");
+					System.out.println("8 vision forwards");
 				} else if (visionThread.rect1_area < 1000) {
 					y = .3;
 
@@ -129,48 +156,54 @@ public class Vision {
 
 					// If they are not true, don't drive forward
 					y = 0;
-					System.out.println("9");
+					System.out.println("9 vision no forwards");
 
 					// Translate and rotate at a decreased speed than the first case
 					if (visionThread.center_of_board < 150) {
-						x = -(Math.abs(visionThread.center_of_board - 160) / 40) * .4;
-						System.out.println("10");
+						x = -(Math.abs(visionThread.center_of_board - 160) / 40) * .6;
+						x -= .1;
+						System.out.println("10 vision translate left");
 
 						// If the center is to the left, translate to the left at a scaled speed
 					} else if (visionThread.center_of_board > 170) {
-						x = (Math.abs(visionThread.center_of_board - 160) / 40) * .4;
-						System.out.println("11");
+						x = (Math.abs(visionThread.center_of_board - 160) / 40) * .6;
+						x += .1;
+						System.out.println("11 vision translate right");
 
 						// If the center of the board is in the center of the image, don't translate
 					} else {
 						x = 0;
-						System.out.println("12");
+						System.out.println("12 vision no translate");
 					}
 					// If the difference in area is more than 50, correct it.
 					if (Math.abs(visionThread.area_difference) > 50) {
 
 						// Scaled rotation - the more tilted the target is, the faster the robot rotates
-						r = (visionThread.area_difference / 350) * .2;
-						System.out.println("13");
+					//r = -((visionThread.area_difference / 350) * .2);
+						System.out.println("13 vision rotate");
 
 					} else
 						r = 0;
-					System.out.println("14");
+					System.out.println("14 vision no rotate");
 				}
 
 				// If less than 2 contours are seen, don't move. Will be changed so that the robot actively seeks out the target.
-				if ((VisionProcessingThread.pipeline.filterContoursOutput().size() < 2)) {
+				if ((VisionProcessingThread.pipeline.filterContoursOutput().size() < 2 || visionThread.rect1_area > 2000)) {
 					x = 0;
 					y = 0;
 					r = 0;
-					System.out.println("15");
+					System.out.println("15 vision no mavement at all");
+				}
+				if(visionThread.rect1_area > 2000 || visionThread.rect2_area > 2000){
+					count=0;
+					state++;
 				}
 
 				// Limits on the translational, rotational, and forward/backward movement variables, adjusted to the decreased movement
-				if (x > .4)
-					x = .4;
-				if (x < -.4)
-					x = -.4;
+				if (x > .6)
+					x = .6;
+				if (x < -.6)
+					x = -.6;
 				if (r > .2)
 					r = .2;
 				if (r < -.2)
@@ -185,8 +218,36 @@ public class Vision {
 			// Uses time to make final approach to gear deposit station, releases the gear, and then backs away to do other things
 			case FINISH:
 				System.out.println("16");
+				count++;
+				y=.3;
+				if (count>=75){
+					y=0;
+					state=GEAR;
+				}
+				break;
+				
+			case GEAR:
+					Outputs.getInstance().GearCANTalon.set(-.75);
+					state=4;
+					count=0;
+					break;
+			case 4:	
+				count++;
+				if (Inputs.limitSwitchOut.get() || count>= 12) {
+					Outputs.getInstance().GearCANTalon.set(0);
+					count=0;
+					state++;
+				}
+				break;
+			case 5:
+				count++;
+				y=-.5;
+				if (count>=500){
+					//y=0;
+				}
 				break;
 			}
+			
 		}
 		// If the A button is pressed, drive forwards and continue adjusting
 
@@ -242,6 +303,10 @@ public class Vision {
 		SmartDashboard.putString("DB/String 5", "rect2_x: " + String.valueOf(visionThread.rect2_x));
 		SmartDashboard.putString("DB/String 6", "rect2_y: " + String.valueOf(visionThread.rect2_y));
 		SmartDashboard.putString("DB/String 7", "rect2_area: " + String.valueOf(visionThread.rect2_area));
+		SmartDashboard.putString("DB/String 3", "Area difference: " + String.valueOf(visionThread.area_difference));
+		SmartDashboard.putString("DB/String 4", "Center of board: " + String.valueOf(visionThread.center_of_board));
+		
+		System.out.println("count timer is " + count);
 
 		// SmartDashboard.putString("DB/String 3", "center x,y: " + String.valueOf(visionThread.center_1_x) + "," + String.valueOf(visionThread.center_1_y));
 		// SmartDashboard.putString("DB/String 8", "center x,y: " + String.valueOf(visionThread.center_2_x) + "," + String.valueOf(visionThread.center_2_y));
@@ -251,11 +316,13 @@ public class Vision {
 		SmartDashboard.putString("DB/String 0", "rect1_x: " + String.valueOf(visionThread.rect1_x));
 		SmartDashboard.putString("DB/String 1", "rect1_y: " + String.valueOf(visionThread.rect1_y));
 		SmartDashboard.putString("DB/String 2", "rect1_area: " + String.valueOf(visionThread.rect1_area));
-		// SmartDashboard.putString("DB/String 3", "Center of Board: " + String.valueOf(visionThread.centerOfBoard));
-		// SmartDashboard.putString("DB/String 4", "Area Difference " + String.valueOf(visionThread.areaDifference));
 		SmartDashboard.putString("DB/String 5", "rect2_x: " + String.valueOf(visionThread.rect2_x));
 		SmartDashboard.putString("DB/String 6", "rect2_y: " + String.valueOf(visionThread.rect2_y));
 		SmartDashboard.putString("DB/String 7", "rect2_area: " + String.valueOf(visionThread.rect2_area));
-		// SmartDashboard.putString("DB/String 8", "center x,y: " + String.valueOf(visionThread.rect2_centerx) + "," + String.valueOf(visionThread.rect2_centery));
+		SmartDashboard.putString("DB/String 3", "Area difference: " + String.valueOf(visionThread.area_difference));
+		SmartDashboard.putString("DB/String 4", "Center of board: " + String.valueOf(visionThread.center_of_board));
+
+		// SmartDashboard.putString("DB/String 3", "center x,y: " + String.valueOf(visionThread.center_1_x) + "," + String.valueOf(visionThread.center_1_y));
+		// SmartDashboard.putString("DB/String 8", "center x,y: " + String.valueOf(visionThread.center_2_x) + "," + String.valueOf(visionThread.center_2_y));
 	}
 }
