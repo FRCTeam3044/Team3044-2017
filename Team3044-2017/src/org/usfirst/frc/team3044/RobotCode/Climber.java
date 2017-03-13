@@ -1,5 +1,5 @@
 /**Cassie Companion
- * 3/3/17
+ * 3/12/17
  * FRC Team 3044
  * climbs the rope using a winch.
  */
@@ -43,10 +43,10 @@ class Climber {
 		boolean aButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_A);
 
 		if (yButton) {
-			winchDrive1.set(1);
-			winchDrive2.set(-1);
+			winchDrive1.set(.5);
+			winchDrive2.set(.5);
 		} else if (aButton) {
-			winchDrive1.set(-1);
+			winchDrive1.set(1);
 			winchDrive2.set(1);
 		} else {
 			winchDrive1.set(0);
