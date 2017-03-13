@@ -1,6 +1,6 @@
 /*
  * Allanah Mathews
- * 3/3/2017
+ * 3/13/2017
  */
 package org.usfirst.frc.team3044.RobotCode;
 
@@ -56,9 +56,9 @@ public class Gear {
 		boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
 
 		if (buttonXPressed && !limitSwitchIn.get()) {
-			GearCANTalon.set(.5);
+			GearCANTalon.set(-.5);
 		} else if (buttonBPressed && !limitSwitchOut.get()) {
-			GearCANTalon.set(-.75);
+			GearCANTalon.set(.75);
 		} else {
 			GearCANTalon.set(0);
 		}
