@@ -1,4 +1,5 @@
-/*Colin MacDonald		
+/*Colin MacDonald
+ * 3-13-17
  * Implements the GripPipeline and VisionProcessingThread to find the gear deposit station		
  * Maximum range of 11 feet		
  * Minimum range of 1 foot		
@@ -26,7 +27,7 @@ public class Vision {
 	int state = 1;
 	int timeState = 0;
 	int count = 0;
-	
+	public static boolean visionDone = false;
 
 	Timer time = new Timer();
 
@@ -42,6 +43,7 @@ public class Vision {
 
 		// CameraServer.getInstance().startAutomaticCapture(Vision.FrontCamera);
 		CameraServer.getInstance().startAutomaticCapture().setResolution(640, 480);
+
 		// FrontCamera = CameraServer.getInstance().addAxisCamera(host)
 		// Object O = CameraServer.getInstance();
 		// if (FrontCamera ==null) {System.out.println("Front camera is null!!!!"); }
@@ -60,10 +62,12 @@ public class Vision {
 		state = 1;
 	}
 
-	final int ALIGN = 0; // Aligns the robot and does not move forward
+	final int ALIGN = 0; // Aligns the robot and does not move forward (currently not used)
 	final int APPROACH = 1; // Moves forward and aligns at a slower speed
 	final int FINISH = 2; // Close to gear deposit station, switches to time
 	final int GEAR = 3; // and deposits gear
+	final int STOPGEAR = 4; // Stops the gear motor
+	final int REVERSE = 5; // Backs up, hands control off to timed movement (for shooter or baseline crossing)
 
 	public void autonomousPeriodic() {
 		double x = 0, y = 0, r = 0;
@@ -71,29 +75,28 @@ public class Vision {
 
 		// Uses an object
 		synchronized (imgLock) {
-			
+
 			SmartDashboard.putNumber("Area difference", visionThread.area_difference);
 			SmartDashboard.putNumber("Board center", visionThread.center_of_board);
-
 
 			// Start of the cases
 			switch (state) {
 
 			// Aligns the robot and does not move forward
-			case ALIGN:
-				
+			case ALIGN: // Case 0 (not used currently) <------------------NOT USED
+
 				switch (timeState) {
 				case 0:
 					y = .45;
 					time.start();
 					timeState = 1;
-				break;
+					break;
 				case 1:
 					if (time.get() == .5) {
 						y = 0;
 						timeState = 500;
 					}
-				break;
+					break;
 				}
 
 				// If the center is to the right, translate to the right at a scaled speed
@@ -118,7 +121,7 @@ public class Vision {
 				if (Math.abs(visionThread.area_difference) > 50) {
 
 					// Scaled rotation - the more tilted the target is, the faster the robot rotates
-					//r = -((visionThread.area_difference / 350) * .2);
+					// r = -((visionThread.area_difference / 350) * .2);
 					System.out.println("4");
 
 				} else
@@ -141,7 +144,7 @@ public class Vision {
 
 				break;
 
-			case APPROACH:
+			case APPROACH: // Case 1
 
 				// If the area difference is less than 50, the center of the board is between 150 and 170, and the rectangle area is less than 2000, drive forward
 				if (Math.abs(visionThread.area_difference) <= 50 && visionThread.center_of_board > 150 && visionThread.center_of_board < 170 && visionThread.rect1_area < 2000
@@ -179,7 +182,7 @@ public class Vision {
 					if (Math.abs(visionThread.area_difference) > 50) {
 
 						// Scaled rotation - the more tilted the target is, the faster the robot rotates
-					//r = -((visionThread.area_difference / 350) * .2);
+						// r = -((visionThread.area_difference / 350) * .2);
 						System.out.println("13 vision rotate");
 
 					} else
@@ -190,12 +193,12 @@ public class Vision {
 				// If less than 2 contours are seen, don't move. Will be changed so that the robot actively seeks out the target.
 				if ((VisionProcessingThread.pipeline.filterContoursOutput().size() < 2 || visionThread.rect1_area > 2000)) {
 					x = 0;
-					y = 0;
+					y = .2;
 					r = 0;
 					System.out.println("15 vision no mavement at all");
 				}
-				if(visionThread.rect1_area > 2000 || visionThread.rect2_area > 2000){
-					count=0;
+				if (visionThread.rect1_area > 1000 || visionThread.rect2_area > 1000) {
+					count = 0;
 					state++;
 				}
 
@@ -216,38 +219,39 @@ public class Vision {
 				break;
 
 			// Uses time to make final approach to gear deposit station, releases the gear, and then backs away to do other things
-			case FINISH:
+			case FINISH: // Case 2
 				System.out.println("16");
 				count++;
-				y=.3;
-				if (count>=75){
-					y=0;
-					state=GEAR;
+				y = .3;
+				if (count >= 75) {
+					y = 0;
+					state = GEAR;
 				}
 				break;
-				
-			case GEAR:
-					Outputs.getInstance().GearCANTalon.set(-.75);
-					state=4;
-					count=0;
-					break;
-			case 4:	
+
+			case GEAR: // Case 3
+				Outputs.getInstance().GearCANTalon.set(-.75);
+				state = 4;
+				count = 0;
+				break;
+			case STOPGEAR: // Case 4
 				count++;
-				if (Inputs.limitSwitchOut.get() || count>= 12) {
+				if (Inputs.limitSwitchOut.get() || count >= 12) {
 					Outputs.getInstance().GearCANTalon.set(0);
-					count=0;
+					count = 0;
 					state++;
 				}
 				break;
-			case 5:
+			case REVERSE: // Case 5
 				count++;
-				y=-.5;
-				if (count>=500){
-					//y=0;
+				y = -.5;
+				if (count >= 75) {
+					y = 0;
+					visionDone = true;
 				}
 				break;
 			}
-			
+
 		}
 		// If the A button is pressed, drive forwards and continue adjusting
 
@@ -271,8 +275,8 @@ public class Vision {
 			r = -.2;
 		if (y > .2)
 			y = .2;
-		if (y < 0)
-			y = 0;
+		if (y < -.5)
+			y = .5;
 
 		// Drive functions that take X, Y and R as inputs. Will later be modified to be helper functions in a different class
 		double v_FrontLeft = r - y - x;
@@ -305,7 +309,7 @@ public class Vision {
 		SmartDashboard.putString("DB/String 7", "rect2_area: " + String.valueOf(visionThread.rect2_area));
 		SmartDashboard.putString("DB/String 3", "Area difference: " + String.valueOf(visionThread.area_difference));
 		SmartDashboard.putString("DB/String 4", "Center of board: " + String.valueOf(visionThread.center_of_board));
-		
+
 		System.out.println("count timer is " + count);
 
 		// SmartDashboard.putString("DB/String 3", "center x,y: " + String.valueOf(visionThread.center_1_x) + "," + String.valueOf(visionThread.center_1_y));
