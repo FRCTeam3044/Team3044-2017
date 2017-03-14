@@ -1,5 +1,5 @@
 /* Ethan Tabachneck
- * 03/03/17
+ * 03/12/17
  * FRC Robotics 2017
  * enables usage of shooter and impeller based on RPMs of the fly wheel on
  * the shooter.
@@ -26,6 +26,7 @@ public class Shooter {
 	DummyTacho shooterTacho = out.shooterTachoCounter;
 	PIDController shooterPID;
 	PIDController shooter2PID;
+	public double currentRPM;
 
 	SecondController secondCon = new SecondController();
 
@@ -35,7 +36,7 @@ public class Shooter {
 	double impPower = .7;
 
 	// sets the RPM variables for tachometer
-	double p = .001, i = -1, d = 0.003, shootingRPM = 38;
+	double p = .001, i = -1, d = 0.003, shootingRPM = 38; // 21 is good for low goal
 
 	// sets the true false statements to false that will determine function
 	// later on in the code
@@ -123,16 +124,16 @@ public class Shooter {
 			 */
 		}
 
-		SmartDashboard.putString("DB/String 5", String.valueOf(shootingRPM));
-		impPower = 1; 
-		//impPower = SmartDashboard.getNumber("DB/Slider 2");
+		SmartDashboard.putString("DB/String 5", "RPM will be: " + String.valueOf(shootingRPM));
+		impPower = 1;
+		// impPower = SmartDashboard.getNumber("DB/Slider 2");
 
 		if (secondCon.getRawButton(secondCon.BUTTON_START)) {
 			shooter.set(shootPower);
 			shooter2.set(shootPower);
 		}
 
-		startShooter(secondCon.getTriggerLeft());
+		shooterOn(secondCon.getTriggerLeft());
 		impOn(secondCon.getTriggerRight());
 	}
 
@@ -146,14 +147,16 @@ public class Shooter {
 	}
 
 	// creates a method for starting the shooter
-	public void startShooter(boolean onPID) {
+	public void shooterOn(boolean onPID) {
 
 		if (onPID) {
 
 			shooterPID.setSetpoint(shootingRPM);
 			shooter2PID.setSetpoint(shootingRPM);
+			currentRPM = shooterTacho.getRate();
+			SmartDashboard.putString("DB/String 6", "currentRPM is : " + String.valueOf(currentRPM));
 
-			if (OnTarget(shooterPID.getSetpoint(), shooterTacho.getRate(), 5) && OnTarget(shooter2PID.getSetpoint(), shooterTacho.getRate(), 5)) {
+			if (OnTarget(shooterPID.getSetpoint(), currentRPM, 5) && OnTarget(shooter2PID.getSetpoint(), shooterTacho.getRate(), 5)) {
 
 				System.out.println("Up to speed");
 				canShoot = true;
@@ -171,7 +174,7 @@ public class Shooter {
 
 	// creates a method for starting the impeller
 	public void impOn(boolean onImp) {
-		if (onImp) {
+		if (onImp && canShoot) {
 			impeller.set(impPower);
 		} else {
 			impeller.set(0);
