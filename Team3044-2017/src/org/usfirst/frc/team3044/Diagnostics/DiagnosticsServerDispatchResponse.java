@@ -10,6 +10,19 @@ public class DiagnosticsServerDispatchResponse {
 	public Object ResponseData; 
 	public String StatusMessage; 
 	
+	public static DiagnosticsServerDispatchResponse BuildErrorResponse( org.nanohttpd.protocols.http.response.Status status,String reasonPhrase)
+	{
+		DiagnosticsServerDispatchResponse r = new DiagnosticsServerDispatchResponse();
+		JSONObject er = new JSONObject(); 
+		er.put("Success", false);
+		r.Status=status; 
+		r.ResponseData = er; 
+		r.StatusMessage = reasonPhrase; 
+		return r; 
+		
+		
+	}
+	
 	public static DiagnosticsServerDispatchResponse BuildExceptionResponse(Exception e, org.nanohttpd.protocols.http.response.Status status,
 			String reasonPhrase)
 	{
