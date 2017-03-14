@@ -2,6 +2,11 @@ package org.usfirst.frc.team3044.RobotCode;
 
 import java.io.IOException;
 import org.usfirst.frc.team3044.Reference.*;
+
+import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,15 +24,32 @@ public class Robot extends IterativeRobot {
 	public Outputs out = Outputs.getInstance();
 
 	DiagnosticsServer diagnosticsServer = new DiagnosticsServer();
+	// AHRS ahrs;
 
 	Timer time = new Timer();
 
 	public void robotInit() {
 		Outputs.getInstance().init();
 		vision.robotInit();
+		/*
+		 * try {
+		 * ahrs = new AHRS(I2C.Port.kOnboard);
+		 * ahrs.reset();
+		 * ahrs.resetDisplacement();
+		 * } catch (RuntimeException ex) {
+		 * System.out.println("Error instantiating navX-MXP:  " + ex.getMessage());
+		 * }
+		 */
 	}
 
 	public void autonomousInit() {
+		vision.startVisionThread();
+		// vision.autonomousInit();
+		try {
+			diagnosticsServer.start(0, true);
+		} catch (IOException e) {
+
+		}
 
 	}
 
@@ -37,31 +59,30 @@ public class Robot extends IterativeRobot {
 	public void driveForward() {
 		switch (driveForwardState) {
 		case 0:
-			out.leftFrontDrive.set(-.6);
-			out.leftBackDrive.set(-.6);
-			out.rightFrontDrive.set(.6);
-			out.rightBackDrive.set(.6);
-			time.start();
+			vision.autonomousPeriodic();
 			driveForwardState = 1;
-			break;
-
-		case 1:
-			if (time.get() > 1.5) {
-				out.leftFrontDrive.set(0);
-				out.leftBackDrive.set(0);
-				out.rightFrontDrive.set(0);
-				out.rightBackDrive.set(0);
-				driveForwardState = 5;
-			}
+			/*
+			 * double rot = .95 - (ahrs.getAngle() / 45);
+			 * if (rot > .3)
+			 * rot = .3;
+			 * if (rot < -.3)
+			 * rot = -.3;
+			 * out.leftFrontDrive.set(-rot);
+			 * out.leftBackDrive.set(-rot);
+			 * out.rightFrontDrive.set(-rot);
+			 * out.rightBackDrive.set(-rot);
+			 * SmartDashboard.putString("DB/String 1", "Angle: " + String.valueOf(ahrs.getAngle()));
+			 * SmartDashboard.putString("DB/String 1", "X: " + String.valueOf(ahrs.getCompassHeading()));
+			 */
 			break;
 		}
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
-	int middleGearState = 0;
+	int RightGearState = 0;
 
-	public void middleGear() {
-		switch (middleGearState) {
+	public void RightGear() {
+		switch (RightGearState) {
 
 		case 0:
 			out.leftFrontDrive.set(-.5);
@@ -69,57 +90,73 @@ public class Robot extends IterativeRobot {
 			out.rightFrontDrive.set(.5);
 			out.rightBackDrive.set(.5);
 			time.start();
-			middleGearState = 1;
+			RightGearState = 1;
 			break;
 
 		case 1:
 			if (time.get() > 1.5) {
-				out.leftFrontDrive.set(0);
-				out.leftBackDrive.set(0);
-				out.rightFrontDrive.set(0);
-				out.rightBackDrive.set(0);
-				out.GearCANTalon.set(-1);
+				out.leftFrontDrive.set(-.3);
+				out.leftBackDrive.set(-.3);
+				out.rightFrontDrive.set(-.3);
+				out.rightBackDrive.set(-.3);
 				time.stop();
 				time.reset();
 				time.start();
-				middleGearState = 2;
+				RightGearState = 2;
 			}
 			break;
 
 		case 2:
-			if (time.get() > 1 || gear.limitSwitchOut.get()) {
-				out.GearCANTalon.set(0);
-				middleGearState = 3;
+			if (time.get() > 1.8 || gear.limitSwitchOut.get()) {
+				out.leftFrontDrive.set(0);
+				out.leftBackDrive.set(0);
+				out.rightFrontDrive.set(0);
+				out.rightBackDrive.set(0);
+				vision.autonomousPeriodic();
+				RightGearState = 3;
 			}
+			break;
+
 		}
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
-	int sideGearState = 0;
+	int LeftGearState = 0;
 
-	public void sideGear() {
-		switch (sideGearState) {
+	public void LeftGear() {
+		switch (RightGearState) {
+
 		case 0:
-			out.leftFrontDrive.set(-.6);
-			out.leftBackDrive.set(-.6);
-			out.rightFrontDrive.set(.6);
-			out.rightBackDrive.set(.6);
+			out.leftFrontDrive.set(-.5);
+			out.leftBackDrive.set(-.5);
+			out.rightFrontDrive.set(.5);
+			out.rightBackDrive.set(.5);
 			time.start();
-			sideGearState = 1;
+			LeftGearState = 1;
 			break;
 
 		case 1:
 			if (time.get() > 1.5) {
-				out.leftFrontDrive.set(0);
-				out.leftBackDrive.set(0);
+				out.leftFrontDrive.set(.3);
+				out.leftBackDrive.set(.3);
 				out.rightFrontDrive.set(.3);
 				out.rightBackDrive.set(.3);
 				time.stop();
 				time.reset();
 				time.start();
-				sideGearState = 2;
+				LeftGearState = 2;
 			}
 			break;
+
+		case 2:
+			if (time.get() > 1.8 || gear.limitSwitchOut.get()) {
+				out.leftFrontDrive.set(0);
+				out.leftBackDrive.set(0);
+				out.rightFrontDrive.set(0);
+				out.rightBackDrive.set(0);
+				vision.autonomousPeriodic();
+				LeftGearState = 3;
+			}
 		}
 	}
 
@@ -133,9 +170,9 @@ public class Robot extends IterativeRobot {
 		if (Dashboard == 0) {
 			this.driveForward();
 		} else if (Dashboard == 1) {
-			this.middleGear();
+			this.RightGear();
 		} else if (Dashboard == 2) {
-			this.sideGear();
+			this.LeftGear();
 		}
 	}
 
@@ -158,11 +195,13 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void disabledInit() {
-		diagnosticsServer.stop(); 
+		diagnosticsServer.stop();
 		vision.stopVisionThread();
 	}
 
 	public void disabledPeriodic() {
+		//SmartDashboard.putString("DB/String 1", "Angle: " + String.valueOf(ahrs.getAngle()));
+
 	}
 
 	public void testInit() {
