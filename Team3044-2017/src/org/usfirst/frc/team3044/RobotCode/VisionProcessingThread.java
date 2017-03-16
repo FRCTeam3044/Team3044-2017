@@ -47,7 +47,7 @@ public class VisionProcessingThread extends Thread {
 			Mat image = new Mat();
 
 			try {
-				// CameraServer.getInstance().getVideo().grabFrame(image);
+				// CameraSe..,kmmrver.getInstance().getVideo().grabFrame(image);
 				CameraServer.getInstance().getVideo(Vision.FrontCamera).grabFrameNoTimeout(image);
 			} catch (Exception e) {
 				// e.printStackTrace();

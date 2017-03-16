@@ -59,15 +59,12 @@ public class Outputs {
 		shooter = new CANTalon(8);
 		shooter2 = new CANTalon(9);
 		impeller = new CANTalon(10);
-
-		
-		// Switch These Talons
 		
 		// Gear
-		GearCANTalon = new CANTalon(2);
+		GearCANTalon = new CANTalon(3);
 
 		// Pickup
-		pickUp = new CANTalon(3);
+		pickUp = new CANTalon(2);
 
 	}
 }
