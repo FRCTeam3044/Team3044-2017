@@ -9,6 +9,8 @@ package org.usfirst.frc.team3044.RobotCode;
 import org.usfirst.frc.team3044.Reference.Inputs;
 import org.usfirst.frc.team3044.Reference.Outputs;
 
+import com.ctre.CANTalon;
+
 import edu.wpi.cscore.AxisCamera;
 import edu.wpi.cscore.VideoSource;
 import edu.wpi.first.wpilibj.CameraServer;
@@ -30,12 +32,14 @@ public class Vision {
 	public static boolean visionDone = false;
 
 	Timer time = new Timer();
+	public CANTalon GearCANTalon;
+	public Outputs out = Outputs.getInstance();
 
 	public void robotInit() {
 		// CAMERA_IP
 		// FrontCamera = new AxisCamera("Gear Camera", "10.30.44.11");
 		// FrontCamera.setResolution(IMG_WIDTH, IMG_HEIGHT);
-
+		GearCANTalon = Outputs.getInstance().GearCANTalon;
 		FrontCamera = CameraServer.getInstance().addAxisCamera("10.30.44.11");
 
 		// USB camera
@@ -49,6 +53,8 @@ public class Vision {
 		// if (FrontCamera ==null) {System.out.println("Front camera is null!!!!"); }
 		visionThread = new VisionProcessingThread();
 		// visionThread.start();
+		
+		
 
 	}
 
@@ -71,6 +77,7 @@ public class Vision {
 
 	public void autonomousPeriodic() {
 		double x = 0, y = 0, r = 0;
+		count++;
 		SmartDashboard.putString("DB/String 8", String.valueOf(state));
 
 		// Uses an object
@@ -201,6 +208,11 @@ public class Vision {
 					count = 0;
 					state++;
 				}
+				
+				if (count>250){
+					state=3;
+					count=0;
+				}
 
 				// Limits on the translational, rotational, and forward/backward movement variables, adjusted to the decreased movement
 				if (x > .6)
@@ -230,14 +242,14 @@ public class Vision {
 				break;
 
 			case GEAR: // Case 3
-				Outputs.getInstance().GearCANTalon.set(-.75);
-				state = 4;
+				GearCANTalon.set(1);
 				count = 0;
+				state = 4;
 				break;
 			case STOPGEAR: // Case 4
 				count++;
-				if (Inputs.limitSwitchOut.get() || count >= 12) {
-					Outputs.getInstance().GearCANTalon.set(0);
+				if (!Inputs.limitSwitchIn.get() || count>=400) {
+					GearCANTalon.set(0);
 					count = 0;
 					state++;
 				}
