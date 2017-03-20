@@ -44,7 +44,7 @@ public class Drive {
 	// establishes controller deadbands for the two sticks along with the math
 	// to be used for the following code
 	public double deadband(double value) {
-		if (Math.abs(value) < .1) {
+		if (Math.abs(value) < .15) {
 			return 0;
 		} else {
 			return value;

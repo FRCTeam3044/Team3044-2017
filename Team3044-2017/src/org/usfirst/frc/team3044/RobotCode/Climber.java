@@ -14,7 +14,6 @@ import org.usfirst.frc.team3044.Reference.SecondController;
 
 //both move in the same direction, 2 motors
 class Climber {
-	// change to Y??, boolean button
 	SecondController controller = new SecondController();
 
 	public Outputs out = Outputs.getInstance();
@@ -23,9 +22,12 @@ class Climber {
 	public CANTalon winchDrive1;
 	public CANTalon winchDrive2;
 
+	public boolean isClimbing;
+	
 	public void climberInit() {
 		winchDrive1 = out.winchDrive1;
 		winchDrive2 = out.winchDrive2;
+		isClimbing = false;
 	}
 	
 	public void climberAutoInit(){
@@ -36,16 +38,20 @@ class Climber {
 	}
 
 	public void climberTeleopPeriodic() {
-		// Climbs the Robot Up
-		boolean yButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_Y);
 
-		// Climbs the Robot Down
+		boolean yButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_Y);
 		boolean aButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_A);
 
-		if (yButton) {
+		if(yButton){
+			isClimbing = true;
+		} else if(aButton){
+			isClimbing = false;
+		}
+		
+		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_START)) {
 			winchDrive1.set(.5);
 			winchDrive2.set(.5);
-		} else if (aButton) {
+		} else if (isClimbing) {
 			winchDrive1.set(1);
 			winchDrive2.set(1);
 		} else {

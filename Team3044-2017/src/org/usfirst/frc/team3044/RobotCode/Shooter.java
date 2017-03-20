@@ -128,11 +128,6 @@ public class Shooter {
 		impPower = 1;
 		// impPower = SmartDashboard.getNumber("DB/Slider 2");
 
-		if (secondCon.getRawButton(secondCon.BUTTON_START)) {
-			shooter.set(shootPower);
-			shooter2.set(shootPower);
-		}
-
 		shooterOn(secondCon.getTriggerLeft());
 		impOn(secondCon.getTriggerRight());
 	}

@@ -53,13 +53,13 @@ public class Gear {
 		 ***************************************************************************/
 		// B = in or retracting
 		boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
-		boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
+		//boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
 
-		if (buttonXPressed && !limitSwitchIn.get()) {
+		if (buttonBPressed && limitSwitchIn.get()) {
+			GearCANTalon.set(1);
+		} else if (!buttonBPressed && limitSwitchOut.get()) {
 			GearCANTalon.set(-.5);
-		} else if (buttonBPressed && !limitSwitchOut.get()) {
-			GearCANTalon.set(.75);
-		} else {
+		}else{
 			GearCANTalon.set(0);
 		}
 

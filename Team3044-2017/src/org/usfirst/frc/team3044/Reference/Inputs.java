@@ -10,8 +10,8 @@ public class Inputs {
 	static FirstController firstJoy = FirstController.getInstance();
 	static SecondController secondJoy = SecondController.getInstance();
 	
-	public static DigitalInput limitSwitchOut = new DigitalInput(5);
-	public static DigitalInput limitSwitchIn = new DigitalInput(4);
+	public static DigitalInput limitSwitchOut = new DigitalInput(4);
+	public static DigitalInput limitSwitchIn = new DigitalInput(5);
 
 	
 	//Drive 
