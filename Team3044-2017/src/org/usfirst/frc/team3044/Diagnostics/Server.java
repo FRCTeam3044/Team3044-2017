@@ -32,33 +32,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Server
 {
-	// org.usfirst.frc.team3044.Diagnostics.Server/Cache 
-	public DiagnosticsServerDispatchResponse Cache(Object o,  org.nanohttpd.protocols.http.request.Method method)
-	{
-		
-		// Add/Update
-		if (Method.POST.equals(method))
-		{
-			if (o.getClass().equals(JSONObject.class))
-			{}
-			else
-			{
-				// Bad request 
-			}
-			return null; 
-			
-		}
-		
-		// Get
-		if (Method.GET.equals(method))
-		{
-			return null; 
-		}
-		
-		// Method not allowed 
-		return null; 
-	}
-	
 	// org.usfirst.frc.team3044.Diagnostics.Server/Ping 
 	public DiagnosticsServerDispatchResponse Ping(Object o, org.nanohttpd.protocols.http.request.Method method)
 	{
@@ -78,6 +51,7 @@ public class Server
 		return ret; 
 	}
 	
+	// org.usfirst.frc.team3044.Diagnostics.Server/PutSmartDashboardString 
 	public DiagnosticsServerDispatchResponse PutSmartDashboardString(Object o, Method method)
 	{
 		JSONObject arg = (JSONObject)o; 
