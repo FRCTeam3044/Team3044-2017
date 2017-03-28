@@ -32,6 +32,16 @@ public class Robot extends IterativeRobot {
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
+	/* 
+	  
+	 NNR this is a really bad place for this. It's a class variable, but its declared right on top of a 
+	 method. This should me moved the class definition. 
+	
+	 Also, this could be the one of the reasons behind autonomous initialization failure - driveForwardState is never re-set to 0. 
+	 Until the class is re-declared, this variable will stay set to 5 after driveForward() is called once. 
+	 
+	 */
+	
 	int driveForwardState = 0;
 
 	public void driveForward() {
