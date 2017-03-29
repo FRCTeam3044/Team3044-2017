@@ -1,3 +1,7 @@
+/*Colin MacDonald
+ * 3-29-17
+ * Implements the GripPipeline to process the image from the camera, and feeds the values to Vision.java
+ */
 package org.usfirst.frc.team3044.RobotCode;
 
 import java.text.SimpleDateFormat;
@@ -38,7 +42,7 @@ public class VisionProcessingThread extends Thread {
 	}
 
 	public void run() {
-		Run = true;
+		Run = true; // This only allow the processing thread to run during auto.
 		while (Run) {
 
 			SimpleDateFormat f = new SimpleDateFormat("HH:mm:ss.SSS");
@@ -104,15 +108,7 @@ public class VisionProcessingThread extends Thread {
 					rect2_centerx = rect2_x + (rightRectangle.width / 2);
 					rect2_centery = rect2_y + (rightRectangle.height / 2);
 					area_difference = (rect1_area - rect2_area);
-
-					/*// Makes sure that the rectangle on the left is ALWAYS rectangle 1
-					boolean r1 = (rect1_x < rect2_x);
-					if (r1) {
-						center_of_board = (rect1_x + rect2_x + rect2_width) / 2;
-					} else {
-						center_of_board = (rect2_x + rect1_x + rect1_width) / 2;
-					}*/
-					center_of_board=((rect1_x+rect1_width)+rect2_x)/2;
+					center_of_board = ((rect1_x + rect1_width) + rect2_x) / 2;
 				}
 			}
 		}
