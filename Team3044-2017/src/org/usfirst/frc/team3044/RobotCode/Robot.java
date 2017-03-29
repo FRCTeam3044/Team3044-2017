@@ -17,19 +17,34 @@ public class Robot extends IterativeRobot {
 	Climber climber = new Climber();
 	Shooter shooter = new Shooter();
 	Pickup pickup = new Pickup();
-
 	public Outputs out = Outputs.getInstance();
-
 	DiagnosticsServer diagnosticsServer = new DiagnosticsServer();
-
 	Timer time = new Timer();
 
+	int driveForwardState = 0;
+	int driveForwardGearState = 0;
+	int RightGearState = 0;
+	int LeftGearState = 0;
+	int timedGearMiddleState = 0;
+
+	/////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public void initializeAutoStates() {
+		driveForwardState = 0;
+		driveForwardGearState = 0;
+		RightGearState = 0;
+		LeftGearState = 0;
+		timedGearMiddleState = 0;
+	}
+
 	public void robotInit() {
+		initializeAutoStates();
 		Outputs.getInstance().init();
 		vision.robotInit();
 	}
 
 	public void autonomousInit() {
+		initializeAutoStates();
 		vision.startVisionThread();
 		// vision.autonomousInit();
 		try {
@@ -39,19 +54,6 @@ public class Robot extends IterativeRobot {
 		}
 
 	}
-
-	// ------------------------------------------------------------------------------------------------------------------------------------------------
-	/* 
-	  
-	 NNR this is a really bad place for this. It's a class variable, but its declared right on top of a 
-	 method. This should me moved the class definition. 
-	
-	 Also, this could be the one of the reasons behind autonomous initialization failure - driveForwardState is never re-set to 0. 
-	 Until the class is re-declared, this variable will stay set to 5 after driveForward() is called once. 
-	 
-	 */
-	
-	int driveForwardState = 0;
 
 	public void driveForward() {
 		switch (driveForwardState) {
@@ -79,7 +81,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
-	int driveForwardGearState = 0;
 
 	public void driveForwardGear() {
 		switch (driveForwardGearState) {
@@ -103,7 +104,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
-	int RightGearState = 0;
 
 	public void RightGear() {
 		switch (RightGearState) {
@@ -145,10 +145,9 @@ public class Robot extends IterativeRobot {
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
-	int LeftGearState = 0;
 
 	public void LeftGear() {
-		switch (RightGearState) {
+		switch (LeftGearState) {
 
 		case 0:
 			out.leftFrontDrive.set(-.5);
@@ -186,7 +185,6 @@ public class Robot extends IterativeRobot {
 	}
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
-	int timedGearMiddleState = 0;
 
 	public void timedGearMiddle() {
 		switch (timedGearMiddleState) {
