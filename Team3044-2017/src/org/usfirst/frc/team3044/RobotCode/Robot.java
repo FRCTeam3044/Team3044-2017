@@ -8,10 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team3044.Diagnostics.*;
 
 public class Robot extends IterativeRobot {
-	org.usfirst.frc.team3044.RobotCode.Vision vision = new org.usfirst.frc.team3044.RobotCode.Vision();
-	// org.usfirst.frc.team3044.RobotCode.VisionSidePosition visionSidePosition
-	// = new org.usfirst.frc.team3044.RobotCode.VisionSidePosition();
-
+	org.usfirst.frc.team3044.RobotCode.Vision vision = new org.usfirst.frc.team3044.RobotCode.Vision(); // Used because there is another vision class.
 	Drive drive = new Drive();
 	Gear gear = new Gear();
 	Climber climber = new Climber();
@@ -21,14 +18,16 @@ public class Robot extends IterativeRobot {
 	DiagnosticsServer diagnosticsServer = new DiagnosticsServer();
 	Timer time = new Timer();
 
-	int driveForwardState = 0;
-	int driveForwardGearState = 0;
-	int RightGearState = 0;
-	int LeftGearState = 0;
-	int timedGearMiddleState = 0;
+	// Sets the auto states to 0
+	int driveForwardState = 0; // For baseline, timed
+	int driveForwardGearState = 0; // Vision for center gear
+	int RightGearState = 0; // Vision for gear starting on the right
+	int LeftGearState = 0; // Vision for gear starting on the left
+	int timedGearMiddleState = 0; // Gear in the center, timed
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////
 
+	// Function to set the auto states to 0
 	public void initializeAutoStates() {
 		driveForwardState = 0;
 		driveForwardGearState = 0;
@@ -38,15 +37,18 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void robotInit() {
-		initializeAutoStates();
+		initializeAutoStates(); // Calls function to set the auto states to 0
+
+		// These 2 should only be called once. Keep it like this
 		Outputs.getInstance().init();
 		vision.robotInit();
+		// Thus ends the mandate "keep it like this". However, always let a trained professional wrangle the spaghetti code found below.
+		// Don't try this at home, kids.
 	}
 
 	public void autonomousInit() {
-		initializeAutoStates();
-		vision.startVisionThread();
-		// vision.autonomousInit();
+		initializeAutoStates(); // Calls function to set the auto states to 0
+		vision.startVisionThread(); // Starts the vision processing
 		try {
 			diagnosticsServer.start(0, true);
 		} catch (IOException e) {
@@ -54,6 +56,8 @@ public class Robot extends IterativeRobot {
 		}
 
 	}
+
+	// ------------------------------------------------------------------------------------------------------------------------------------------------
 
 	public void driveForward() {
 		switch (driveForwardState) {
@@ -89,7 +93,7 @@ public class Robot extends IterativeRobot {
 			driveForwardGearState = 1;
 			break;
 		case 1:
-			vision.autonomousPeriodic();
+			vision.autonomousPeriodic(); // Immediately goes into to the vision auto(which will automatically move forward)
 			if (time.get() > 10) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
@@ -108,7 +112,7 @@ public class Robot extends IterativeRobot {
 	public void RightGear() {
 		switch (RightGearState) {
 
-		case 0:
+		case 0: // Moves forward
 			out.leftFrontDrive.set(-.5);
 			out.leftBackDrive.set(-.5);
 			out.rightFrontDrive.set(.5);
@@ -117,7 +121,7 @@ public class Robot extends IterativeRobot {
 			RightGearState = 1;
 			break;
 
-		case 1:
+		case 1: // Once the time reaches 1.5 seconds, turn
 			if (time.get() > 1.5) {
 				out.leftFrontDrive.set(-.3);
 				out.leftBackDrive.set(-.3);
@@ -130,13 +134,13 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 
-		case 2:
+		case 2: // When the reseted time reaches 1.8 seconds, stop moving and go into the vision auto.
 			if (time.get() > 1.8 || gear.limitSwitchOut.get()) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
-				// visionSidePosition.autonomousPeriodic();
+				// vision.autonomousPeriodic();
 				RightGearState = 3;
 			}
 			break;
@@ -149,7 +153,7 @@ public class Robot extends IterativeRobot {
 	public void LeftGear() {
 		switch (LeftGearState) {
 
-		case 0:
+		case 0: // Moves forward
 			out.leftFrontDrive.set(-.5);
 			out.leftBackDrive.set(-.5);
 			out.rightFrontDrive.set(.5);
@@ -158,7 +162,7 @@ public class Robot extends IterativeRobot {
 			LeftGearState = 1;
 			break;
 
-		case 1:
+		case 1:// Once the time reaches 1.5 seconds, turn
 			if (time.get() > 1.5) {
 				out.leftFrontDrive.set(.3);
 				out.leftBackDrive.set(.3);
@@ -171,13 +175,13 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 
-		case 2:
+		case 2:// When the reseted time reaches 1.8 seconds, stop moving and go into the vision auto.
 			if (time.get() > 1.8 || gear.limitSwitchOut.get()) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
-				// visionSidePosition.autonomousPeriodic();
+				// vision.autonomousPeriodic();
 				LeftGearState = 3;
 			}
 			break;
@@ -259,11 +263,11 @@ public class Robot extends IterativeRobot {
 		// double Dashboard = 2;
 
 		if (Dashboard == 0) {
-			this.driveForward();
+			this.driveForward(); // For baseline, timed
 		} else if (Dashboard == 1) {
-			this.driveForwardGear();
+			this.driveForwardGear(); // Vision center gear
 		} else if (Dashboard == 2) {
-			this.timedGearMiddle();
+			this.timedGearMiddle(); // Center gear, timed
 		}
 	}
 
@@ -287,7 +291,7 @@ public class Robot extends IterativeRobot {
 
 	public void disabledInit() {
 		diagnosticsServer.stop();
-		vision.stopVisionThread();
+		vision.stopVisionThread(); // Don't run vision when disabled
 	}
 
 	public void disabledPeriodic() {
@@ -295,7 +299,7 @@ public class Robot extends IterativeRobot {
 		// String.valueOf(ahrs.getAngle()));'
 	}
 
-	public void testInit() {
+	public void testInit() { // Vision is called in testInit and testPeriodic for, well, testing.
 
 		vision.startVisionThread();
 		// vision.autonomousInit();
