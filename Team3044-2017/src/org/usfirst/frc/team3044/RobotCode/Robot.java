@@ -2,6 +2,8 @@ package org.usfirst.frc.team3044.RobotCode;
 
 import java.io.IOException;
 import org.usfirst.frc.team3044.Reference.*;
+
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,6 +19,7 @@ public class Robot extends IterativeRobot {
 	public Outputs out = Outputs.getInstance();
 	DiagnosticsServer diagnosticsServer = new DiagnosticsServer();
 	Timer time = new Timer();
+	Compressor compressor = new Compressor(61);
 
 	// Sets the auto states to 0
 	int driveForwardState = 0; // For baseline, timed
@@ -37,6 +40,7 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void robotInit() {
+		compressor.setClosedLoopControl(true);
 		initializeAutoStates(); // Calls function to set the auto states to 0
 
 		// These 2 should only be called once. Keep it like this
@@ -48,6 +52,7 @@ public class Robot extends IterativeRobot {
 
 	public void autonomousInit() {
 		initializeAutoStates(); // Calls function to set the auto states to 0
+		vision.state = 1;
 		vision.startVisionThread(); // Starts the vision processing
 		try {
 			diagnosticsServer.start(0, true);
@@ -113,20 +118,20 @@ public class Robot extends IterativeRobot {
 		switch (RightGearState) {
 
 		case 0: // Moves forward
-			out.leftFrontDrive.set(-.5);
-			out.leftBackDrive.set(-.5);
-			out.rightFrontDrive.set(.5);
-			out.rightBackDrive.set(.5);
+			out.leftFrontDrive.set(-.3);
+			out.leftBackDrive.set(-.3);
+			out.rightFrontDrive.set(.3);
+			out.rightBackDrive.set(.3);
 			time.start();
 			RightGearState = 1;
 			break;
 
 		case 1: // Once the time reaches 1.5 seconds, turn
-			if (time.get() > 1.5) {
-				out.leftFrontDrive.set(-.3);
-				out.leftBackDrive.set(-.3);
-				out.rightFrontDrive.set(-.3);
-				out.rightBackDrive.set(-.3);
+			if (time.get() > 2) {
+				out.leftFrontDrive.set(-.2);
+				out.leftBackDrive.set(-.2);
+				out.rightFrontDrive.set(-.2);
+				out.rightBackDrive.set(-.2);
 				time.stop();
 				time.reset();
 				time.start();
@@ -135,12 +140,12 @@ public class Robot extends IterativeRobot {
 			break;
 
 		case 2: // When the reseted time reaches 1.8 seconds, stop moving and go into the vision auto.
-			if (time.get() > 1.8 || gear.limitSwitchOut.get()) {
+			if (time.get() > 1 ) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
-				// vision.autonomousPeriodic();
+				vision.autonomousPeriodic();
 				RightGearState = 3;
 			}
 			break;
@@ -268,11 +273,14 @@ public class Robot extends IterativeRobot {
 			this.driveForwardGear(); // Vision center gear
 		} else if (Dashboard == 2) {
 			this.timedGearMiddle(); // Center gear, timed
+		} else if (Dashboard == 3) {
+			this.RightGear(); // Vision center gear
 		}
 	}
 
 	public void teleopInit() {
-		Outputs.getInstance().init();
+		compressor.setClosedLoopControl(true);
+		// Outputs.getInstance().init();
 		drive.driveInit();
 		climber.climberInit();
 		gear.gearInit();
@@ -292,6 +300,8 @@ public class Robot extends IterativeRobot {
 	public void disabledInit() {
 		diagnosticsServer.stop();
 		vision.stopVisionThread(); // Don't run vision when disabled
+		compressor.setClosedLoopControl(false);
+
 	}
 
 	public void disabledPeriodic() {
