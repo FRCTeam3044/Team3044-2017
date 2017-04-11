@@ -4,6 +4,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Outputs {
 
@@ -39,6 +40,8 @@ public class Outputs {
 	
 	// Gear
 	public CANTalon GearCANTalon;
+	public Solenoid gearPneumaticRelease;
+	public Solenoid gearPneumaticIn;
 
 	// Pickup
 	public CANTalon pickUp;
@@ -62,6 +65,8 @@ public class Outputs {
 		
 		// Gear
 		GearCANTalon = new CANTalon(3);
+		gearPneumaticRelease = new Solenoid(61, 4);
+		gearPneumaticIn = new Solenoid(61, 5);
 
 		// Pickup
 		pickUp = new CANTalon(2);
