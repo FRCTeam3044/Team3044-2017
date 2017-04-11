@@ -29,10 +29,10 @@ public class Vision {
 	public CANTalon GearCANTalon;
 	public Outputs out = Outputs.getInstance();
 	int state = 1; // State of main vision code for movement. It is 1 because the 0 state is aligning only; no forward movement
-
-	// Unused things
-	int timeState = 0;
 	int count = 0;
+	// Unused things
+
+	int timeState = 0;
 	public static boolean visionDone = false;
 	Timer time = new Timer();
 
@@ -160,29 +160,28 @@ public class Vision {
 			case APPROACH: // Case 1
 
 				// If the area difference is less than 50, the center of the board is between 150 and 170, and the rectangle area is less than 2000, drive forward
-				if (Math.abs(visionThread.area_difference) <= 50 && visionThread.center_of_board > 150 && visionThread.center_of_board < 170 && visionThread.rect1_area < 2000
-						&& visionThread.rect1_area > 1000) {
-					y = ((2000 - visionThread.rect1_area) / 1500) * .3;
-					y += .1;
-					System.out.println("8 vision forwards");
-				} else if (visionThread.rect1_area < 1000) { // If the rectangle is far away, move forwards at 30%
+				if (visionThread.center_of_board > 150 && visionThread.center_of_board < 170 && visionThread.rect1_area < 2000 && visionThread.rect1_area > 500) {
+					/*
+					 * y = ((2000 - visionThread.rect1_area) / 1500) * .3;
+					 * y += .1;
+					 */
 					y = .3;
-
+					System.out.println("8 vision forwards");
 				} else {
 
 					// If they are not true, don't drive forward
-					y = 0;
+					y = .3;
 					System.out.println("9 vision no forwards");
 
 					// Translate and rotate at a decreased speed than the first case
 					if (visionThread.center_of_board < 150) {
-						x = -(Math.abs(visionThread.center_of_board - 160) / 40) * .6;
+						x = -(Math.abs(visionThread.center_of_board - 160) / 40) * .4;
 						x -= .1;
 						System.out.println("10 vision translate left");
 
 						// If the center is to the left, translate to the left at a scaled speed
 					} else if (visionThread.center_of_board > 170) {
-						x = (Math.abs(visionThread.center_of_board - 160) / 40) * .6;
+						x = (Math.abs(visionThread.center_of_board - 160) / 40) * .4;
 						x += .1;
 						System.out.println("11 vision translate right");
 
@@ -224,10 +223,10 @@ public class Vision {
 				}
 
 				// Limits on the translational, rotational, and forward/backward movement variables, adjusted to the decreased movement
-				if (x > .6)
-					x = .6;
-				if (x < -.6)
-					x = -.6;
+				if (x > .4)
+					x = 4;
+				if (x < -.4)
+					x = -.4;
 				if (r > .2)
 					r = .2;
 				if (r < -.2)
@@ -256,18 +255,18 @@ public class Vision {
 
 			// Opens the gear mechanism
 			case GEAR: // Case 3
-				GearCANTalon.set(1);
+				out.gearPneumaticRelease.set(true);
+				out.gearPneumaticIn.set(false);
 				count = 0;
 				state = 4;
 				break;
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			// Stop opening the gear if the limit switch is hit or 8 seconds has passed
+			// Stop opening the gear if the limit switch is hit or 2 seconds has passed
 			case STOPGEAR: // Case 4
 				count++;
-				if (!Inputs.limitSwitchIn.get() || count >= 400) {
-					GearCANTalon.set(0);
+				if (count >= 100) {
 					count = 0;
 					state++;
 				}
@@ -281,6 +280,8 @@ public class Vision {
 				y = -.5;
 				if (count >= 75) {
 					y = 0;
+					out.gearPneumaticRelease.set(false);
+					out.gearPneumaticIn.set(true);
 					visionDone = true;
 				}
 				break;
