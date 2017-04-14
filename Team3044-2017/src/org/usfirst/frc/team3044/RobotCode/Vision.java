@@ -84,9 +84,10 @@ public class Vision {
 		// Uses an object to synchronize variables
 		synchronized (imgLock) {
 
-			// Values to dashboard for troubleshooting
+			// Values to java dashboard for troubleshooting
 			SmartDashboard.putNumber("Area difference", visionThread.area_difference);
 			SmartDashboard.putNumber("Board center", visionThread.center_of_board);
+			SmartDashboard.putNumber("Rect 1 area", visionThread.rect1_area);
 
 			// Start of the cases
 			switch (state) {
@@ -160,18 +161,20 @@ public class Vision {
 			case APPROACH: // Case 1
 
 				// If the area difference is less than 50, the center of the board is between 150 and 170, and the rectangle area is less than 2000, drive forward
-				if (visionThread.center_of_board > 150 && visionThread.center_of_board < 170 && visionThread.rect1_area < 2000 && visionThread.rect1_area > 500) {
+				if (visionThread.center_of_board > 150 && visionThread.center_of_board < 170 && visionThread.rect1_area < 2000 && visionThread.rect1_area > 500
+						&& VisionProcessingThread.pipeline.filterContoursOutput().size() < 2) {
 					/*
 					 * y = ((2000 - visionThread.rect1_area) / 1500) * .3;
 					 * y += .1;
 					 */
 					y = .3;
+					x = 0;
 					System.out.println("8 vision forwards");
 				} else {
 
-					// If they are not true, don't drive forward
+					// If they are not true, drive forward
 					y = .3;
-					System.out.println("9 vision no forwards");
+					System.out.println("9 vision ye forwards");
 
 					// Translate and rotate at a decreased speed than the first case
 					if (visionThread.center_of_board < 150) {
@@ -216,8 +219,8 @@ public class Vision {
 					state++;
 				}
 
-				// If it takes too long (5 seconds), move to the next state
-				if (count > 250) {
+				// If it takes too long (8 seconds), move to the next state
+				if (count > 400) {
 					state = 3;
 					count = 0;
 				}
@@ -240,12 +243,12 @@ public class Vision {
 
 			//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-			// Uses time to make final approach to gear deposit station
+			// Uses time to make final approach to gear deposit station(3 sec)
 			case FINISH: // Case 2
 				System.out.println("16");
 				count++;
 				y = .3;
-				if (count >= 75) {
+				if (count >= 150) {
 					y = 0;
 					state = GEAR;
 				}
