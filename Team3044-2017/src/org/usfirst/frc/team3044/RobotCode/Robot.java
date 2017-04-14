@@ -64,7 +64,7 @@ public class Robot extends IterativeRobot {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
 
-	public void driveForward() {
+	public void driveForward() { // Timed baseline
 		switch (driveForwardState) {
 		case 0:
 			out.leftFrontDrive.set(-.5);
@@ -91,7 +91,7 @@ public class Robot extends IterativeRobot {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
 
-	public void driveForwardGear() {
+	public void driveForwardGear() { // Uses vision
 		switch (driveForwardGearState) {
 		case 0:
 			time.start();
@@ -114,10 +114,12 @@ public class Robot extends IterativeRobot {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
 
-	public void RightGear() {
+	public void RightGear() { // Right vision
 		switch (RightGearState) {
 
 		case 0: // Moves forward
+			vision.state = 1;
+			vision.count = 0;
 			out.leftFrontDrive.set(-.3);
 			out.leftBackDrive.set(-.3);
 			out.rightFrontDrive.set(.3);
@@ -126,12 +128,12 @@ public class Robot extends IterativeRobot {
 			RightGearState = 1;
 			break;
 
-		case 1: // Once the time reaches 1.5 seconds, turn
-			if (time.get() > 2) {
-				out.leftFrontDrive.set(-.2);
-				out.leftBackDrive.set(-.2);
-				out.rightFrontDrive.set(-.2);
-				out.rightBackDrive.set(-.2);
+		case 1: // Once the time reaches 1.7 seconds, turn
+			if (time.get() > 1.7) {
+				out.leftFrontDrive.set(-.3);
+				out.leftBackDrive.set(-.3);
+				out.rightFrontDrive.set(-.3);
+				out.rightBackDrive.set(-.3);
 				time.stop();
 				time.reset();
 				time.start();
@@ -139,14 +141,13 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 
-		case 2: // When the reseted time reaches 1.8 seconds, stop moving and go into the vision auto.
-			if (time.get() > 1 ) {
+		case 2: // When the reseted time reaches .85 seconds, stop moving and go into the vision auto.
+			if (time.get() > .85) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
 				vision.autonomousPeriodic();
-				RightGearState = 3;
 			}
 			break;
 
@@ -155,20 +156,22 @@ public class Robot extends IterativeRobot {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
 
-	public void LeftGear() {
+	public void LeftGear() { // Left vision
 		switch (LeftGearState) {
 
 		case 0: // Moves forward
-			out.leftFrontDrive.set(-.5);
-			out.leftBackDrive.set(-.5);
-			out.rightFrontDrive.set(.5);
-			out.rightBackDrive.set(.5);
+			vision.state = 1;
+			vision.count = 0;
+			out.leftFrontDrive.set(-.3);
+			out.leftBackDrive.set(-.3);
+			out.rightFrontDrive.set(.3);
+			out.rightBackDrive.set(.3);
 			time.start();
 			LeftGearState = 1;
 			break;
 
-		case 1:// Once the time reaches 1.5 seconds, turn
-			if (time.get() > 1.5) {
+		case 1:// Once the time reaches 1.7 seconds, turn
+			if (time.get() > 1.7) {
 				out.leftFrontDrive.set(.3);
 				out.leftBackDrive.set(.3);
 				out.rightFrontDrive.set(.3);
@@ -180,14 +183,13 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 
-		case 2:// When the reseted time reaches 1.8 seconds, stop moving and go into the vision auto.
-			if (time.get() > 1.8 || gear.limitSwitchOut.get()) {
+		case 2:// When the reseted time reaches .85 seconds, stop moving and go into the vision auto.
+			if (time.get() > .85) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
-				// vision.autonomousPeriodic();
-				LeftGearState = 3;
+				vision.autonomousPeriodic();
 			}
 			break;
 		}
@@ -195,7 +197,7 @@ public class Robot extends IterativeRobot {
 
 	// ------------------------------------------------------------------------------------------------------------------------------------------------
 
-	public void timedGearMiddle() {
+	public void timedGearMiddle() { // Center gear with time(unreliable)
 		switch (timedGearMiddleState) {
 		case 0:
 			out.leftFrontDrive.set(-.5);
@@ -213,7 +215,8 @@ public class Robot extends IterativeRobot {
 				out.rightFrontDrive.set(0);
 				out.rightBackDrive.set(0);
 
-				out.GearCANTalon.set(1);
+				out.gearPneumaticRelease.set(true);
+				out.gearPneumaticIn.set(false);
 
 				time.stop();
 				time.reset();
@@ -222,9 +225,8 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 		case 2:
-			if (time.get() > .5 || !gear.limitSwitchIn.get()) {
+			if (time.get() > .5) {
 
-				out.GearCANTalon.set(0);
 				time.stop();
 				time.reset();
 				time.start();
@@ -274,7 +276,9 @@ public class Robot extends IterativeRobot {
 		} else if (Dashboard == 2) {
 			this.timedGearMiddle(); // Center gear, timed
 		} else if (Dashboard == 3) {
-			this.RightGear(); // Vision center gear
+			this.RightGear(); // Vision right gear
+		} else if (Dashboard == 4) {
+			this.LeftGear(); // Vision left gear
 		}
 	}
 
@@ -284,7 +288,6 @@ public class Robot extends IterativeRobot {
 		drive.driveInit();
 		climber.climberInit();
 		gear.gearInit();
-		shooter.shooterInit();
 		pickup.pickupInit();
 	}
 
