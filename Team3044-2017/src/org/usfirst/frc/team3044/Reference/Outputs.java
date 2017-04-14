@@ -37,6 +37,8 @@ public class Outputs {
 	public CANTalon impeller;
 	public DigitalInput shooterTacho = new DigitalInput(6);
 	public DummyTacho shooterTachoCounter = new DummyTacho(shooterTacho);
+	public Solenoid hopperPneumaticRelease;
+	public Solenoid hopperPneumaticIn;
 	
 	// Gear
 	public CANTalon GearCANTalon;
@@ -62,6 +64,9 @@ public class Outputs {
 		shooter = new CANTalon(8);
 		shooter2 = new CANTalon(9);
 		impeller = new CANTalon(10);
+		hopperPneumaticRelease = new Solenoid(61, 2);
+		hopperPneumaticIn = new Solenoid(61, 3);
+
 		
 		// Gear
 		GearCANTalon = new CANTalon(3);
