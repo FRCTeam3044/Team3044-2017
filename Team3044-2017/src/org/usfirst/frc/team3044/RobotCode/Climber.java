@@ -48,9 +48,9 @@ class Climber {
 			isClimbing = false;
 		}
 		
-		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_START)) {
-			winchDrive1.set(.5);
-			winchDrive2.set(.5);
+		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_X)) {
+			winchDrive1.set(.16);
+			winchDrive2.set(.16);
 		} else if (isClimbing) {
 			winchDrive1.set(1);
 			winchDrive2.set(1);

@@ -1,11 +1,14 @@
 /*
  * Allanah Mathews
- * 3/13/2017
+ * 4/10/2017
  */
 package org.usfirst.frc.team3044.RobotCode;
 
 import org.usfirst.frc.team3044.Reference.*;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.ctre.CANTalon;
 
 public class Gear {
@@ -34,6 +37,23 @@ public class Gear {
 	public void gearAutoPeriodic() {
 	}
 
+	public void gearPneumatic() {
+
+		boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
+
+		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_B)) {
+
+			out.gearPneumaticRelease.set(true);
+			out.gearPneumaticIn.set(false);
+		}
+
+		else {
+
+			out.gearPneumaticRelease.set(false);
+			out.gearPneumaticIn.set(true);
+		}
+	}
+
 	/****************************************************************************
 	 * TeleopPeriod Goal: Use X button to drive motors forward & B button to
 	 * drive motors backwards Start fully retracted, X = extending until fully
@@ -45,23 +65,28 @@ public class Gear {
 	 ***************************************************************************/
 	public void gearTeleopPeriodic() {
 
+		gearPneumatic();
+
 		/****************************************************************************
 		 * 3 if statement to satisfy the gear Mechanism. Does not use states
 		 * Trial 1
 		 * 
 		 * @return
 		 ***************************************************************************/
-		// B = in or retracting
-		boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
-		//boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
 
-		if (buttonBPressed && limitSwitchIn.get()) {
-			GearCANTalon.set(1);
-		} else if (!buttonBPressed && limitSwitchOut.get()) {
-			GearCANTalon.set(-.5);
-		}else{
-			GearCANTalon.set(0);
-		}
+		// B = in or retracting
+		/*
+		 * boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
+		 * // boolean buttonXPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_X);
+		 * 
+		 * if (buttonBPressed && limitSwitchIn.get()) {
+		 * GearCANTalon.set(1);
+		 * } else if (!buttonBPressed && limitSwitchOut.get()) {
+		 * GearCANTalon.set(-.5);
+		 * } else {
+		 * GearCANTalon.set(0);
+		 * }
+		 */
 
 	}
 

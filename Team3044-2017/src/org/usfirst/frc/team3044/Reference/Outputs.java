@@ -4,6 +4,7 @@ import com.ctre.CANTalon;
 import com.ctre.CANTalon.FeedbackDevice;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DigitalOutput;
+import edu.wpi.first.wpilibj.Solenoid;
 
 public class Outputs {
 
@@ -36,9 +37,13 @@ public class Outputs {
 	public CANTalon impeller;
 	public DigitalInput shooterTacho = new DigitalInput(6);
 	public DummyTacho shooterTachoCounter = new DummyTacho(shooterTacho);
+	public Solenoid hopperPneumaticRelease;
+	public Solenoid hopperPneumaticIn;
 	
 	// Gear
 	public CANTalon GearCANTalon;
+	public Solenoid gearPneumaticRelease;
+	public Solenoid gearPneumaticIn;
 
 	// Pickup
 	public CANTalon pickUp;
@@ -59,9 +64,14 @@ public class Outputs {
 		shooter = new CANTalon(8);
 		shooter2 = new CANTalon(9);
 		impeller = new CANTalon(10);
+		hopperPneumaticRelease = new Solenoid(61, 2);
+		hopperPneumaticIn = new Solenoid(61, 3);
+
 		
 		// Gear
 		GearCANTalon = new CANTalon(3);
+		gearPneumaticRelease = new Solenoid(61, 4);
+		gearPneumaticIn = new Solenoid(61, 5);
 
 		// Pickup
 		pickUp = new CANTalon(2);
