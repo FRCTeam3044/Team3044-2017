@@ -128,8 +128,8 @@ public class Robot extends IterativeRobot {
 			RightGearState = 1;
 			break;
 
-		case 1: // Once the time reaches 1.7 seconds, turn
-			if (time.get() > 1.7) {
+		case 1: // Once the time reaches 1.6 seconds, turn
+			if (time.get() > 1.6) {
 				out.leftFrontDrive.set(-.3);
 				out.leftBackDrive.set(-.3);
 				out.rightFrontDrive.set(-.3);
@@ -141,8 +141,8 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 
-		case 2: // When the reseted time reaches .85 seconds, stop moving and go into the vision auto.
-			if (time.get() > .85) {
+		case 2: // When the reseted time reaches .75 seconds, stop moving and go into the vision auto.
+			if (time.get() > .75) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
@@ -170,8 +170,8 @@ public class Robot extends IterativeRobot {
 			LeftGearState = 1;
 			break;
 
-		case 1:// Once the time reaches 1.7 seconds, turn
-			if (time.get() > 1.7) {
+		case 1:// Once the time reaches 1.6 seconds, turn
+			if (time.get() > 1.6) {
 				out.leftFrontDrive.set(.3);
 				out.leftBackDrive.set(.3);
 				out.rightFrontDrive.set(.3);
@@ -183,8 +183,8 @@ public class Robot extends IterativeRobot {
 			}
 			break;
 
-		case 2:// When the reseted time reaches .85 seconds, stop moving and go into the vision auto.
-			if (time.get() > .85) {
+		case 2:// When the reseted time reaches .75 seconds, stop moving and go into the vision auto.
+			if (time.get() > .75) {
 				out.leftFrontDrive.set(0);
 				out.leftBackDrive.set(0);
 				out.rightFrontDrive.set(0);
