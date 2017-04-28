@@ -1,5 +1,5 @@
 /* Ethan Tabachneck
- * 03/12/17
+ * 04/27/17
  * FRC Robotics 2017
  * enables usage of shooter and impeller based on RPMs of the fly wheel on
  * the shooter.
@@ -21,7 +21,7 @@ public class Shooter {
 	SecondController secondCon = new SecondController();
 
 	public void hopperPneumatic() {
-		if (secondCon.getTriggerRight()) {
+		if (secondCon.getTriggerRight() || FirstController.getInstance().getTriggerRight()) {
 
 			out.hopperPneumaticRelease.set(true);
 			out.hopperPneumaticIn.set(false);
