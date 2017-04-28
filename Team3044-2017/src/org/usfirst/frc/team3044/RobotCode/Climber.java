@@ -1,5 +1,5 @@
 /**Cassie Companion
- * 3/12/17
+ * 4/27/17
  * FRC Team 3044
  * climbs the rope using a winch.
  */
@@ -9,6 +9,7 @@ package org.usfirst.frc.team3044.RobotCode;
 import com.ctre.CANTalon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.usfirst.frc.team3044.Reference.FirstController;
 import org.usfirst.frc.team3044.Reference.Outputs;
 import org.usfirst.frc.team3044.Reference.SecondController;
 
@@ -41,14 +42,16 @@ class Climber {
 
 		boolean yButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_Y);
 		boolean aButton = SecondController.getInstance().getRawButton(SecondController.BUTTON_A);
+		boolean yButtonFirst = FirstController.getInstance().getRawButton(SecondController.BUTTON_Y);
+		boolean aButtonFirst = FirstController.getInstance().getRawButton(SecondController.BUTTON_A);
 
-		if(yButton){
+		if(yButton || yButtonFirst){
 			isClimbing = true;
-		} else if(aButton){
+		} else if(aButton || aButtonFirst){
 			isClimbing = false;
 		}
 		
-		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_X)) {
+		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_X) || FirstController.getInstance().getRawButton(FirstController.BUTTON_X)) {
 			winchDrive1.set(.16);
 			winchDrive2.set(.16);
 		} else if (isClimbing) {
