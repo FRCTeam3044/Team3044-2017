@@ -1,6 +1,6 @@
 /*
  * Allanah Mathews
- * 4/10/2017
+ * 4/27/2017
  */
 package org.usfirst.frc.team3044.RobotCode;
 
@@ -41,7 +41,7 @@ public class Gear {
 
 		boolean buttonBPressed = SecondController.getInstance().getRawButton(SecondController.BUTTON_B);
 
-		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_B)) {
+		if (SecondController.getInstance().getRawButton(SecondController.BUTTON_B) || FirstController.getInstance().getRawButton(FirstController.BUTTON_B)) {
 
 			out.gearPneumaticRelease.set(true);
 			out.gearPneumaticIn.set(false);
